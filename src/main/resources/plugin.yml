@@ -2,7 +2,7 @@ name: OmniCosmetics
 description: $description
 version: '${version}'
 
-main: net.omni.omniCosmetics.OmniCosmetics
+main: net.omni.cosmetics.OmniCosmetics
 api-version: '1.21.11'
 load: POSTWORLD
 
