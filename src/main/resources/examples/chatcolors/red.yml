@@ -1,0 +1,13 @@
+name: red
+enabled: true
+color: "<red>"
+permission: omniosmetics.chatcolor.red
+stars: 1
+command: /chatcolor <player> red
+operator: console
+
+item:
+  name: "<red>Red Chat Color</red>"
+  type: RED_DYE
+  lore:
+    - "<gray>Red chat color</gray>"

@@ -1,0 +1,13 @@
+name: vip
+enabled: true
+tag: "[VIP]"
+permission: omniosmetics.tag.vip
+stars: 2
+command: /tag <player> vip
+operator: console
+
+item:
+  name: "<gold>VIP Tag</gold>"
+  type: NAME_TAG
+  lore:
+    - "<gray>VIP player tag</gray>"

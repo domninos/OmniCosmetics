@@ -1,0 +1,13 @@
+name: smile
+enabled: true
+pin: "[:)]"
+permission: omniosmetics.pin.smile
+stars: 1
+command: /pin <player> smile
+operator: console
+
+item:
+  name: "<yellow>Smile Pin</yellow>"
+  type: PLAYER_HEAD
+  lore:
+    - "<gray>A smiley face pin</gray>"

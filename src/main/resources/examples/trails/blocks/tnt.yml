@@ -1,0 +1,20 @@
+name: tnt
+enabled: true
+blocks:
+  TNT:
+    chance: 0.5
+  GUNPOWDER:
+    chance: 0.3
+  REDSTONE_BLOCK:
+    chance: 0.2
+radius: 2
+permission: omniosmetics.trail.tnt
+stars: 1
+command: /trail <player> tnt
+operator: console
+
+item:
+  name: "<#FF0000><b>TNT Trail</b></#FF0000>"
+  type: TNT
+  lore:
+    - "<gray>You can get this trail from the cloud crate</gray>"

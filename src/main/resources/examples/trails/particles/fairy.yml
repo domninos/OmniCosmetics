@@ -1,0 +1,22 @@
+name: fairy
+enabled: true
+permission: omniosmetics.trail.fairy
+stars: 1
+command: /trail <player> fairy
+operator: console
+
+particles:
+  DUST:
+    color: "85,220,255"
+    size: 1.35
+    count: 1
+  END_ROD:
+    count: 1
+  ELECTRIC_SPARK:
+    count: 1
+
+item:
+  name: "<light_purple>Fairy</light_purple>"
+  type: ROSE_BUSH
+  lore:
+    - "<gray>You can get this trail from the cloud crate</gray>"
