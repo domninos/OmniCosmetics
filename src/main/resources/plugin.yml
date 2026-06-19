@@ -1,0 +1,9 @@
+name: OmniCosmetics
+description: $description
+version: '${version}'
+
+main: net.omni.omniCosmetics.OmniCosmetics
+api-version: '1.21.11'
+load: POSTWORLD
+
+authors: [ domninos ]
