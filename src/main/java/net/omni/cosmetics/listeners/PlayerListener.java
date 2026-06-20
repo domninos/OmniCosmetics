@@ -7,6 +7,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import java.util.UUID;
+import java.util.logging.Level;
+
 public class PlayerListener implements Listener {
 
     private final OmniCosmetics plugin;
@@ -17,16 +20,23 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        // TODO load db to cache
+        plugin.getPlayerManager().loadPlayer(event.getPlayer().getUniqueId())
+                .exceptionally(throwable -> {
+                    plugin.getLogger().log(Level.WARNING, "Failed to load player data", throwable);
+                    return null;
+                });
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
-        // remove from cache, save to DB
+        UUID uuid = event.getPlayer().getUniqueId();
+        plugin.getPlayerManager().unloadPlayer(uuid);
+        plugin.getBlockTrailManager().handleQuit(uuid);
+        plugin.getGuiManager().removeFromGui(uuid);
+        plugin.getBenchmarkManager().stopBenchmark(uuid);
     }
 
     public void register() {
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
-
 }

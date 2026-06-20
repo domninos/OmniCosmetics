@@ -1,9 +1,14 @@
 package net.omni.cosmetics;
 
 import net.omni.cosmetics.commands.CosmeticsCommand;
+import net.omni.cosmetics.commands.TrailCommand;
 import net.omni.cosmetics.db.DatabaseManager;
+import net.omni.cosmetics.listeners.BlockBreakListener;
+import net.omni.cosmetics.listeners.GUIListener;
 import net.omni.cosmetics.listeners.PlayerListener;
-import net.omni.cosmetics.managers.MessagesManager;
+import net.omni.cosmetics.managers.*;
+import net.omni.cosmetics.player.CosmeticsPlayer;
+import net.omni.cosmetics.tasks.TrailTask;
 import net.omni.cosmetics.util.ChatRenderer;
 import net.omni.cosmetics.util.PaperChatRenderer;
 import net.omni.cosmetics.util.SpigotChatRenderer;
@@ -12,6 +17,7 @@ import net.omni.cosmetics.util.config.MessageUtil;
 import net.omni.cosmetics.util.config.OCConfig;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class OmniCosmetics extends JavaPlugin {
@@ -19,19 +25,30 @@ public final class OmniCosmetics extends JavaPlugin {
     private ChatRenderer chatRenderer;
 
     private DatabaseManager databaseManager;
+    private CosmeticsManager cosmeticsManager;
+    private GUIManager guiManager;
+    private BlockTrailManager blockTrailManager;
+    private BenchmarkManager benchmarkManager;
+    private PlayerManager playerManager;
 
     private OCConfig messagesConfig;
     private MessagesManager messagesManager;
 
     private ConfigUtil configUtil;
 
+    private TrailTask trailTask;
+
     @Override
     public void onDisable() {
+        if (benchmarkManager != null) benchmarkManager.stopAll();
+        if (trailTask != null) trailTask.stop();
+        if (blockTrailManager != null) blockTrailManager.stop();
 
-        messagesManager.flush();
+        if (playerManager != null) playerManager.saveAll();
 
-        // close pool AFTER everything
-        databaseManager.closePool();
+        if (messagesManager != null) messagesManager.flush();
+
+        if (databaseManager != null) databaseManager.closePool();
 
         sendConsole("<red>Successfully disabled.</red>");
     }
@@ -48,9 +65,27 @@ public final class OmniCosmetics extends JavaPlugin {
         this.messagesManager = new MessagesManager(this);
         messagesManager.loadMessages();
 
-        // load classes
         this.databaseManager = new DatabaseManager(this);
         databaseManager.initDatabase();
+
+        this.cosmeticsManager = new CosmeticsManager(this);
+        cosmeticsManager.initDirectories();
+        cosmeticsManager.loadCosmetics();
+
+        this.guiManager = new GUIManager(this);
+
+        this.blockTrailManager = new BlockTrailManager(this);
+
+        this.playerManager = new PlayerManager(this);
+
+        CosmeticsAPI.init(this);
+
+        this.trailTask = new TrailTask(this);
+        trailTask.start();
+
+        this.benchmarkManager = new BenchmarkManager(this);
+
+        blockTrailManager.start();
 
         registerHooks();
 
@@ -80,18 +115,56 @@ public final class OmniCosmetics extends JavaPlugin {
 
     private void registerCommands() {
         new CosmeticsCommand(this).register();
+        new TrailCommand(this).register();
     }
 
     private void registerListeners() {
         new PlayerListener(this).register();
+        Bukkit.getPluginManager().registerEvents(new GUIListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new BlockBreakListener(this), this);
     }
 
     public void sendConsole(String message) {
-        chatRenderer.sendMessage(Bukkit.getConsoleSender(), chatRenderer.color(message));
+        chatRenderer.sendMessage(Bukkit.getConsoleSender(), message);
+    }
+
+    public void reload() {
+        configUtil.reloadConfig();
+        messagesManager.loadMessages();
+        cosmeticsManager.reloadCosmetics();
+        benchmarkManager.rebuildPool();
+        playerManager.saveAll();
+
+        // Re-resolve active cosmetics for online players
+        for (Player online : Bukkit.getOnlinePlayers()) {
+            CosmeticsPlayer cp = playerManager.getPlayer(online.getUniqueId());
+
+            if (cp == null) continue;
+
+            if (cp.getActiveParticleTrail() != null)
+                cp.setActiveParticleTrail(cosmeticsManager.getParticleTrail(cp.getActiveParticleTrail().getName()));
+
+            if (cp.getActiveBlockTrail() != null)
+                cp.setActiveBlockTrail(cosmeticsManager.getBlockTrail(cp.getActiveBlockTrail().getName()));
+
+            if (cp.getActiveTag() != null)
+                cp.setActiveTag(cosmeticsManager.getTag(cp.getActiveTag().getName()));
+
+            if (cp.getActivePin() != null)
+                cp.setActivePin(cosmeticsManager.getPin(cp.getActivePin().getName()));
+
+            if (cp.getActiveChatColor() != null)
+                cp.setActiveChatColor(cosmeticsManager.getChatColor(cp.getActiveChatColor().getName()));
+
+        }
+
+        trailTask.restart();
+        blockTrailManager.restart();
+        sendConsole("<green>Successfully reloaded.</green>");
     }
 
     public void sendMessage(CommandSender sender, String message) {
-        chatRenderer.sendMessage(sender, chatRenderer.color(message));
+        chatRenderer.sendMessage(sender, message);
     }
 
     public OCConfig getMessagesConfig() {
@@ -108,5 +181,29 @@ public final class OmniCosmetics extends JavaPlugin {
 
     public DatabaseManager getDatabaseManager() {
         return databaseManager;
+    }
+
+    public CosmeticsManager getCosmeticsManager() {
+        return cosmeticsManager;
+    }
+
+    public GUIManager getGuiManager() {
+        return guiManager;
+    }
+
+    public BlockTrailManager getBlockTrailManager() {
+        return blockTrailManager;
+    }
+
+    public BenchmarkManager getBenchmarkManager() {
+        return benchmarkManager;
+    }
+
+    public PlayerManager getPlayerManager() {
+        return playerManager;
+    }
+
+    public TrailTask getTrailTask() {
+        return trailTask;
     }
 }
