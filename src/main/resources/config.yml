@@ -12,11 +12,65 @@ particle-trails-enabled: true
 # Whether block trails are enabled
 block-trails-enabled: true
 
-# GUI main menu configuration
+# Block types that block trails should never change (containers, functional blocks)
+block-trail:
+  blacklisted-blocks:
+    - CHEST
+    - TRAPPED_CHEST
+    - ENDER_CHEST
+    - HOPPER
+    - FURNACE
+    - BLAST_FURNACE
+    - SMOKER
+    - BARREL
+    - DROPPER
+    - DISPENSER
+    - SHULKER_BOX
+    - WHITE_SHULKER_BOX
+    - ORANGE_SHULKER_BOX
+    - MAGENTA_SHULKER_BOX
+    - LIGHT_BLUE_SHULKER_BOX
+    - YELLOW_SHULKER_BOX
+    - LIME_SHULKER_BOX
+    - PINK_SHULKER_BOX
+    - GRAY_SHULKER_BOX
+    - LIGHT_GRAY_SHULKER_BOX
+    - CYAN_SHULKER_BOX
+    - PURPLE_SHULKER_BOX
+    - BLUE_SHULKER_BOX
+    - BROWN_SHULKER_BOX
+    - GREEN_SHULKER_BOX
+    - RED_SHULKER_BOX
+    - BLACK_SHULKER_BOX
+    - BELL
+    - BREWING_STAND
+    - CAULDRON
+    - COMPOSTER
+    - CRAFTING_TABLE
+    - ENCHANTING_TABLE
+    - JUKEBOX
+    - LECTERN
+    - RESPAWN_ANCHOR
+    - STONECUTTER
+    - GRINDSTONE
+    - LOOM
+    - CARTOGRAPHY_TABLE
+    - SMITHING_TABLE
+    - FLETCHING_TABLE
+    - ANVIL
+    - CHIPPED_ANVIL
+    - DAMAGED_ANVIL
+
+# GUI configuration
 gui:
   main-menu:
-    title: "  <#AAFFAA>Cosmetics</#AAFFAA>"
+    title: "<#AAFFAA>Cosmetics</#AAFFAA>"
     size: 27
+    exit:
+      slot: 4
+      material: BARRIER
+      name: "<red>Exit</red>"
+      lore: []
     items:
       - slot: 10
         material: FIREWORK_STAR
@@ -24,27 +78,66 @@ gui:
         name: "<#AAFFAA>Particle Trails</#AAFFAA>"
         lore:
           - "<gray>Particle effects that follow you</gray>"
-      - slot: 12
+      - slot: 11
         material: GRASS_BLOCK
         category: BLOCK_TRAIL
         name: "<#FFAA00>Block Trails</#FFAA00>"
         lore:
           - "<gray>Block trails that follow you</gray>"
-      - slot: 14
+      - slot: 12
         material: NAME_TAG
         category: TAG
         name: "<#55FFFF>Tags</#55FFFF>"
         lore:
           - "<gray>Name tags for chat</gray>"
-      - slot: 16
+      - slot: 13
         material: PLAYER_HEAD
         category: PIN
         name: "<#FF55FF>Pins</#FF55FF>"
         lore:
           - "<gray>Emoji pins for chat</gray>"
-      - slot: 22
+      - slot: 14
         material: RED_DYE
         category: CHAT_COLOR
         name: "<#FF5555>Chat Colors</#FF5555>"
         lore:
           - "<gray>Chat message colors</gray>"
+
+  category-menu:
+    title: "<#AAFFAA>%category%</#AAFFAA>"
+    size: 45
+    back:
+      slot: 4
+      material: BARRIER
+      name: "<red>Back</red>"
+      lore: []
+    previous:
+      slot: 18
+      material: ARROW
+      name: "<yellow>Previous Page</yellow>"
+      lore: []
+      disabled-material: ARROW
+      disabled-name: "<gray>Previous Page</gray>"
+      disabled-lore: []
+    next:
+      slot: 26
+      material: ARROW
+      name: "<yellow>Next Page</yellow>"
+      lore: []
+      disabled-material: ARROW
+      disabled-name: "<gray>Next Page</gray>"
+      disabled-lore: []
+
+  filler:
+    material: GRAY_STAINED_GLASS_PANE
+    name: " "
+    lore: []
+
+  placeholder:
+    material: STONE_BUTTON
+    name: "<gray>Coming Soon</gray>"
+    lore:
+      - "<dark_gray>More cosmetics coming soon!</dark_gray>"
+
+  pagination:
+    threshold: 21
