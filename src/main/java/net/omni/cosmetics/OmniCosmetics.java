@@ -43,6 +43,7 @@ public final class OmniCosmetics extends JavaPlugin {
         if (benchmarkManager != null) benchmarkManager.stopAll();
         if (trailTask != null) trailTask.stop();
         if (blockTrailManager != null) blockTrailManager.stop();
+        if (cosmeticsManager != null) cosmeticsManager.flush();
 
         if (playerManager != null) playerManager.saveAll();
 
