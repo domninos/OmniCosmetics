@@ -1,0 +1,16 @@
+name: enchant
+enabled: true
+permission: omniosmetics.trail.enchant
+stars: 1
+command: /trail <player> enchant
+operator: console
+
+particles:
+  ENCHANTED_HIT:
+    count: 1
+
+item:
+  name: "<dark_aqua>Enchant</dark_aqua>"
+  type: ENCHANTED_BOOK
+  lore:
+    - "<gray>Channel ancient magical energies</gray>"

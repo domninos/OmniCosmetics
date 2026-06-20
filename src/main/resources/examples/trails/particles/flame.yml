@@ -1,0 +1,16 @@
+name: flame
+enabled: true
+permission: omniosmetics.trail.flame
+stars: 1
+command: /trail <player> flame
+operator: console
+
+particles:
+  FLAME:
+    count: 1
+
+item:
+  name: "<red>Flame</red>"
+  type: BLAZE_POWDER
+  lore:
+    - "<gray>Scorch the earth with blazing flames</gray>"

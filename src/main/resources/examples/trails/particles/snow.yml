@@ -1,0 +1,16 @@
+name: snow
+enabled: true
+permission: omniosmetics.trail.snow
+stars: 1
+command: /trail <player> snow
+operator: console
+
+particles:
+  SNOWFLAKE:
+    count: 1
+
+item:
+  name: "<white>Snow</white>"
+  type: SNOWBALL
+  lore:
+    - "<gray>Chill your enemies with frosty snow</gray>"

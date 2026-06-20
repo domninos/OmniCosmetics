@@ -1,0 +1,16 @@
+name: sweep
+enabled: true
+permission: omniosmetics.trail.sweep
+stars: 1
+command: /trail <player> sweep
+operator: console
+
+particles:
+  SWEEP_ATTACK:
+    count: 1
+
+item:
+  name: "<gray>Sweep</gray>"
+  type: STONE_SWORD
+  lore:
+    - "<gray>Sweep through your enemies</gray>"

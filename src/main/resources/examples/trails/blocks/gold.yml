@@ -1,0 +1,18 @@
+﻿name: gold
+enabled: true
+blocks:
+  GOLD_BLOCK:
+    chance: 0.4
+  GOLD_ORE:
+    chance: 0.3
+radius: 1
+permission: omniosmetics.trail.gold
+stars: 1
+command: /trail <player> gold
+operator: console
+
+item:
+  name: "<#FFD700>Gold Trail</#FFD700>"
+  type: GOLD_BLOCK
+  lore:
+    - "<gray>A shiny golden trail fit for a king</gray>"

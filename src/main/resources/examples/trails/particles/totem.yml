@@ -1,0 +1,16 @@
+name: totem
+enabled: true
+permission: omniosmetics.trail.totem
+stars: 1
+command: /trail <player> totem
+operator: console
+
+particles:
+  TOTEM_OF_UNDYING:
+    count: 1
+
+item:
+  name: "<gold>Totem</gold>"
+  type: TOTEM_OF_UNDYING
+  lore:
+    - "<gray>Defy death with undying power</gray>"

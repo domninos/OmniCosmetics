@@ -1,0 +1,16 @@
+﻿name: purpur
+enabled: true
+blocks:
+  PURPUR_BLOCK:
+    chance: 0.5
+radius: 1
+permission: omniosmetics.trail.purpur
+stars: 1
+command: /trail <player> purpur
+operator: console
+
+item:
+  name: "<#CC66CC>Purpur Trail</#CC66CC>"
+  type: PURPUR_BLOCK
+  lore:
+    - "<gray>An end-themed purpur trail</gray>"

@@ -1,0 +1,19 @@
+name: cloud
+enabled: true
+permission: omniosmetics.trail.cloud
+stars: 1
+command: /trail <player> cloud
+operator: console
+
+particles:
+  CLOUD:
+    count: 1
+  BLOCK:
+    material: SNOW_BLOCK
+    count: 1
+
+item:
+  name: "<white>Cloud</white>"
+  type: WHITE_WOOL
+  lore:
+    - "<gray>Float through the skies in style</gray>"

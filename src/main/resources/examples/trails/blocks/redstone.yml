@@ -1,0 +1,16 @@
+﻿name: redstone
+enabled: true
+blocks:
+  REDSTONE_BLOCK:
+    chance: 0.7
+radius: 0
+permission: omniosmetics.trail.redstone
+stars: 1
+command: /trail <player> redstone
+operator: console
+
+item:
+  name: "<#FF3333>Redstone Trail</#FF3333>"
+  type: REDSTONE_BLOCK
+  lore:
+    - "<gray>A powered redstone trail</gray>"

@@ -1,0 +1,16 @@
+﻿name: emerald
+enabled: true
+blocks:
+  EMERALD_BLOCK:
+    chance: 0.5
+radius: 1
+permission: omniosmetics.trail.emerald
+stars: 1
+command: /trail <player> emerald
+operator: console
+
+item:
+  name: "<#00FF66>Emerald Trail</#00FF66>"
+  type: EMERALD_BLOCK
+  lore:
+    - "<gray>A vibrant emerald trail</gray>"

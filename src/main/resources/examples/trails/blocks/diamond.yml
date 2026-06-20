@@ -1,0 +1,16 @@
+﻿name: diamond
+enabled: true
+blocks:
+  DIAMOND_BLOCK:
+    chance: 0.5
+radius: 1
+permission: omniosmetics.trail.diamond
+stars: 1
+command: /trail <player> diamond
+operator: console
+
+item:
+  name: "<#33E6FF>Diamond Trail</#33E6FF>"
+  type: DIAMOND_BLOCK
+  lore:
+    - "<gray>A luxurious diamond-studded trail</gray>"

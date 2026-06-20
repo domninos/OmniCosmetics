@@ -4,6 +4,7 @@ permission: omniosmetics.trail.fairy
 stars: 1
 command: /trail <player> fairy
 operator: console
+radius: 1
 
 particles:
   DUST:

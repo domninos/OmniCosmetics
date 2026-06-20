@@ -3,6 +3,8 @@ enabled: true
 blocks:
   TNT:
     chance: 0.5
+
+radius: 0
 permission: omniosmetics.trail.tnt
 stars: 1
 command: /trail <player> tnt

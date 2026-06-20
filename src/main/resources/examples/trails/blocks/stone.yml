@@ -1,0 +1,16 @@
+﻿name: stone
+enabled: true
+blocks:
+  STONE:
+    chance: 0.5
+radius: 0
+permission: omniosmetics.trail.stone
+stars: 1
+command: /trail <player> stone
+operator: console
+
+item:
+  name: "<#808080>Stone Trail</#808080>"
+  type: STONE
+  lore:
+    - "<gray>A classic stone trail for your feet</gray>"

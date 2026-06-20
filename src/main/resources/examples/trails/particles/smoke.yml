@@ -1,0 +1,18 @@
+name: smoke
+enabled: true
+permission: omniosmetics.trail.smoke
+stars: 1
+command: /trail <player> smoke
+operator: console
+
+particles:
+  SMOKE:
+    count: 1
+  CAMPFIRE_SIGNAL_SMOKE:
+    count: 1
+
+item:
+  name: "<dark_gray>Smoke</dark_gray>"
+  type: CAMPFIRE
+  lore:
+    - "<gray>Veil yourself in mysterious smoke</gray>"

@@ -1,0 +1,16 @@
+name: tear
+enabled: true
+permission: omniosmetics.trail.tear
+stars: 1
+command: /trail <player> tear
+operator: console
+
+particles:
+  FALLING_OBSIDIAN_TEAR:
+    count: 1
+
+item:
+  name: "<dark_blue>Tear</dark_blue>"
+  type: CRYING_OBSIDIAN
+  lore:
+    - "<gray>Shed obsidian tears of sorrow</gray>"

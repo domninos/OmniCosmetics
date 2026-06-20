@@ -1,0 +1,20 @@
+name: sculk
+enabled: true
+permission: omniosmetics.trail.sculk
+stars: 1
+command: /trail <player> sculk
+operator: console
+
+particles:
+  SHRIEK:
+    delay: 20
+    count: 1
+  SCULK_CHARGE:
+    roll: 0.5
+    count: 1
+
+item:
+  name: "<dark_aqua>Sculk</dark_aqua>"
+  type: SCULK_CATALYST
+  lore:
+    - "<gray>Echo the deep dark's ancient power</gray>"

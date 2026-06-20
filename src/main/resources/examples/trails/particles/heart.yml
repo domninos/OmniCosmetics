@@ -1,0 +1,16 @@
+name: heart
+enabled: true
+permission: omniosmetics.trail.heart
+stars: 1
+command: /trail <player> heart
+operator: console
+
+particles:
+  HEART:
+    count: 1
+
+item:
+  name: "<red>Heart</red>"
+  type: POPPY
+  lore:
+    - "<gray>Spread love wherever you go</gray>"

@@ -1,0 +1,18 @@
+﻿name: nether_brick
+enabled: true
+blocks:
+  NETHER_BRICK:
+    chance: 0.5
+  RED_NETHER_BRICKS:
+    chance: 0.3
+radius: 0
+permission: omniosmetics.trail.nether_brick
+stars: 1
+command: /trail <player> nether_brick
+operator: console
+
+item:
+  name: "<#4A0000>Nether Brick Trail</#4A0000>"
+  type: NETHER_BRICK
+  lore:
+    - "<gray>A fiery trail from the Nether</gray>"

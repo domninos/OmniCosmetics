@@ -1,0 +1,18 @@
+name: dust
+enabled: true
+permission: omniosmetics.trail.dust
+stars: 1
+command: /trail <player> dust
+operator: console
+
+particles:
+  DUST:
+    color: "255,170,0"
+    size: 1.5
+    count: 1
+
+item:
+  name: "<gold>Dust</gold>"
+  type: RED_SAND
+  lore:
+    - "<gray>Kick up a storm of colorful dust</gray>"

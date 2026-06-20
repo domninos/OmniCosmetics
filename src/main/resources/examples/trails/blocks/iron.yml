@@ -1,0 +1,16 @@
+﻿name: iron
+enabled: true
+blocks:
+  IRON_BLOCK:
+    chance: 0.6
+radius: 1
+permission: omniosmetics.trail.iron
+stars: 1
+command: /trail <player> iron
+operator: console
+
+item:
+  name: "<#E6E6E6>Iron Trail</#E6E6E6>"
+  type: IRON_BLOCK
+  lore:
+    - "<gray>A sturdy iron trail</gray>"

@@ -1,0 +1,16 @@
+name: glow
+enabled: true
+permission: omniosmetics.trail.glow
+stars: 1
+command: /trail <player> glow
+operator: console
+
+particles:
+  GLOW:
+    count: 1
+
+item:
+  name: "<yellow>Glow</yellow>"
+  type: GLOWSTONE_DUST
+  lore:
+    - "<gray>Light up the darkness around you</gray>"

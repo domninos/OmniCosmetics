@@ -1,0 +1,16 @@
+name: ink
+enabled: true
+permission: omniosmetics.trail.ink
+stars: 1
+command: /trail <player> ink
+operator: console
+
+particles:
+  GLOW_SQUID_INK:
+    count: 1
+
+item:
+  name: "<dark_aqua>Ink</dark_aqua>"
+  type: INK_SAC
+  lore:
+    - "<gray>Leave a trail of glowing ink</gray>"

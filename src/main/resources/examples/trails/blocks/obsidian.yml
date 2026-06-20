@@ -1,0 +1,16 @@
+﻿name: obsidian
+enabled: true
+blocks:
+  OBSIDIAN:
+    chance: 0.5
+radius: 1
+permission: omniosmetics.trail.obsidian
+stars: 1
+command: /trail <player> obsidian
+operator: console
+
+item:
+  name: "<#1A0033>Obsidian Trail</#1A0033>"
+  type: OBSIDIAN
+  lore:
+    - "<gray>A mysterious obsidian trail</gray>"

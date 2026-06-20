@@ -1,0 +1,20 @@
+﻿name: quartz
+enabled: true
+blocks:
+  QUARTZ_BLOCK:
+    chance: 0.4
+  QUARTZ_PILLAR:
+    chance: 0.3
+  SMOOTH_QUARTZ:
+    chance: 0.2
+radius: 1
+permission: omniosmetics.trail.quartz
+stars: 1
+command: /trail <player> quartz
+operator: console
+
+item:
+  name: "<#F0F0F0>Quartz Trail</#F0F0F0>"
+  type: QUARTZ_BLOCK
+  lore:
+    - "<gray>A pristine quartz trail</gray>"

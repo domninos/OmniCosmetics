@@ -1,0 +1,16 @@
+name: portal
+enabled: true
+permission: omniosmetics.trail.portal
+stars: 1
+command: /trail <player> portal
+operator: console
+
+particles:
+  PORTAL:
+    count: 1
+
+item:
+  name: "<dark_purple>Portal</dark_purple>"
+  type: OBSIDIAN
+  lore:
+    - "<gray>Step through a mystical portal</gray>"

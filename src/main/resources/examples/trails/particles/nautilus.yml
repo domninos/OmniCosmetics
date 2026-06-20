@@ -1,0 +1,19 @@
+name: nautilus
+enabled: true
+permission: omniosmetics.trail.nautilus
+stars: 1
+command: /trail <player> nautilus
+operator: console
+
+particles:
+  NAUTILUS:
+    count: 1
+  ITEM:
+    material: NAUTILUS_SHELL
+    count: 1
+
+item:
+  name: "<aqua>Nautilus</aqua>"
+  type: NAUTILUS_SHELL
+  lore:
+    - "<gray>Ride the ocean currents in style</gray>"

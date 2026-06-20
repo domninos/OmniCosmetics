@@ -1,0 +1,18 @@
+name: spark
+enabled: true
+permission: omniosmetics.trail.spark
+stars: 1
+command: /trail <player> spark
+operator: console
+
+particles:
+  ELECTRIC_SPARK:
+    count: 1
+  SCRAPE:
+    count: 1
+
+item:
+  name: "<yellow>Spark</yellow>"
+  type: LIGHTNING_ROD
+  lore:
+    - "<gray>Electrify your path with sparks</gray>"

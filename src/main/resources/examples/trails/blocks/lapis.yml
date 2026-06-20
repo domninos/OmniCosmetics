@@ -1,0 +1,18 @@
+﻿name: lapis
+enabled: true
+blocks:
+  LAPIS_BLOCK:
+    chance: 0.5
+  LAPIS_ORE:
+    chance: 0.3
+radius: 1
+permission: omniosmetics.trail.lapis
+stars: 1
+command: /trail <player> lapis
+operator: console
+
+item:
+  name: "<#3355FF>Lapis Trail</#3355FF>"
+  type: LAPIS_BLOCK
+  lore:
+    - "<gray>A deep blue lapis trail</gray>"

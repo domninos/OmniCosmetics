@@ -1,0 +1,21 @@
+name: damage
+enabled: true
+permission: omniosmetics.trail.damage
+stars: 1
+command: /trail <player> damage
+operator: console
+
+particles:
+  DAMAGE_INDICATOR:
+    count: 1
+  INSTANT_EFFECT:
+    count: 1
+  ENTITY_EFFECT:
+    color: "255,50,50"
+    count: 1
+
+item:
+  name: "<red>Damage</red>"
+  type: REDSTONE
+  lore:
+    - "<gray>Wreak havoc with every step</gray>"

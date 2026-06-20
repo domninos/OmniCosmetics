@@ -1,0 +1,16 @@
+name: dragon
+enabled: true
+permission: omniosmetics.trail.dragon
+stars: 1
+command: /trail <player> dragon
+operator: console
+
+particles:
+  DRAGON_BREATH:
+    count: 1
+
+item:
+  name: "<light_purple>Dragon</light_purple>"
+  type: DRAGON_HEAD
+  lore:
+    - "<gray>Unleash the fury of the Ender Dragon</gray>"

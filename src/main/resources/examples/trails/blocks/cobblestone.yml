@@ -1,0 +1,16 @@
+﻿name: cobblestone
+enabled: true
+blocks:
+  COBBLESTONE:
+    chance: 0.6
+radius: 0
+permission: omniosmetics.trail.cobblestone
+stars: 1
+command: /trail <player> cobblestone
+operator: console
+
+item:
+  name: "<#8B7D6B>Cobblestone Trail</#8B7D6B>"
+  type: COBBLESTONE
+  lore:
+    - "<gray>A rough cobblestone path behind you</gray>"

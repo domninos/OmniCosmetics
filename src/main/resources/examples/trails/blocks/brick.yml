@@ -1,0 +1,18 @@
+﻿name: brick
+enabled: true
+blocks:
+  BRICK:
+    chance: 0.4
+  STONE_BRICKS:
+    chance: 0.3
+radius: 0
+permission: omniosmetics.trail.brick
+stars: 1
+command: /trail <player> brick
+operator: console
+
+item:
+  name: "<#B34B4B>Brick Trail</#B34B4B>"
+  type: BRICK
+  lore:
+    - "<gray>A mix of brick and stone bricks</gray>"

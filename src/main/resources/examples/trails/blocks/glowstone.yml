@@ -1,0 +1,16 @@
+﻿name: glowstone
+enabled: true
+blocks:
+  GLOWSTONE:
+    chance: 0.6
+radius: 1
+permission: omniosmetics.trail.glowstone
+stars: 1
+command: /trail <player> glowstone
+operator: console
+
+item:
+  name: "<#FFFF66>Glowstone Trail</#FFFF66>"
+  type: GLOWSTONE
+  lore:
+    - "<gray>A luminous glowstone trail</gray>"

@@ -1,0 +1,18 @@
+name: drip
+enabled: true
+permission: omniosmetics.trail.drip
+stars: 1
+command: /trail <player> drip
+operator: console
+
+particles:
+  DRIP_WATER:
+    count: 1
+  DRIP_LAVA:
+    count: 1
+
+item:
+  name: "<aqua>Drip</aqua>"
+  type: WATER_BUCKET
+  lore:
+    - "<gray>Drip-drip-drip through the day</gray>"

@@ -1,0 +1,18 @@
+﻿name: coal
+enabled: true
+blocks:
+  COAL_BLOCK:
+    chance: 0.4
+  COAL_ORE:
+    chance: 0.3
+radius: 1
+permission: omniosmetics.trail.coal
+stars: 1
+command: /trail <player> coal
+operator: console
+
+item:
+  name: "<#333333>Coal Trail</#333333>"
+  type: COAL_BLOCK
+  lore:
+    - "<gray>A dark charcoal trail</gray>"

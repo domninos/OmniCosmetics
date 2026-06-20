@@ -1,0 +1,16 @@
+name: note
+enabled: true
+permission: omniosmetics.trail.note
+stars: 1
+command: /trail <player> note
+operator: console
+
+particles:
+  NOTE:
+    count: 1
+
+item:
+  name: "<green>Note</green>"
+  type: NOTE_BLOCK
+  lore:
+    - "<gray>Leave a melody in your wake</gray>"
