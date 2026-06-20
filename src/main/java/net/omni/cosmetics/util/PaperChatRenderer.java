@@ -17,7 +17,7 @@ public class PaperChatRenderer implements ChatRenderer {
     private static final MiniMessage MINI_MESSAGE = MiniMessage.miniMessage();
     private static final Component PREFIX =
             MiniMessage.miniMessage().deserialize(
-                    "<gray>[</gray><gradient:#00AAFF:#55FFFF>ACH</gradient><gray>]</gray> "
+                    "<gray>[</gray><gradient:#00AAFF:#55FFFF>Cosmetics</gradient><gray>]</gray> "
             );
 
     @Override
@@ -55,6 +55,6 @@ public class PaperChatRenderer implements ChatRenderer {
 
     @Override
     public void sendMessage(CommandSender sender, String message) {
-        sender.sendMessage(parse(message));
+        sender.sendMessage(PREFIX.append(toComponent(message)));
     }
 }
