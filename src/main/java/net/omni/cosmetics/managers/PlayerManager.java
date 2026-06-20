@@ -2,6 +2,7 @@ package net.omni.cosmetics.managers;
 
 import net.omni.cosmetics.OmniCosmetics;
 import net.omni.cosmetics.player.CosmeticsPlayer;
+import org.bukkit.entity.Player;
 
 import java.util.Map;
 import java.util.UUID;
@@ -17,11 +18,11 @@ public class PlayerManager {
         this.plugin = plugin;
     }
 
-    public CompletableFuture<CosmeticsPlayer> loadPlayer(UUID uuid) {
-        return plugin.getDatabaseManager().loadPlayer(uuid)
-                .thenApply(player -> {
-                    players.put(uuid, player);
-                    return player;
+    public CompletableFuture<CosmeticsPlayer> loadPlayer(Player player) {
+        return plugin.getDatabaseManager().loadPlayer(player)
+                .thenApply(cosmeticsPlayer -> {
+                    players.put(player.getUniqueId(), cosmeticsPlayer);
+                    return cosmeticsPlayer;
                 });
     }
 

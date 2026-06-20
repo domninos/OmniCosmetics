@@ -5,6 +5,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import net.omni.cosmetics.OmniCosmetics;
 import net.omni.cosmetics.player.CosmeticsPlayer;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,7 +13,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 
@@ -71,7 +71,7 @@ public class DatabaseManager {
         return dataSource.getConnection();
     }
 
-    public CompletableFuture<CosmeticsPlayer> loadPlayer(UUID uuid) {
+    public CompletableFuture<CosmeticsPlayer> loadPlayer(Player player) {
         CompletableFuture<CosmeticsPlayer> future = new CompletableFuture<>();
 
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
@@ -79,9 +79,9 @@ public class DatabaseManager {
 
             try (Connection connection = getConnection();
                  PreparedStatement stmt = connection.prepareStatement(query)) {
-                stmt.setString(1, uuid.toString());
+                stmt.setString(1, player.getUniqueId().toString());
 
-                CosmeticsPlayer player = new CosmeticsPlayer(uuid);
+                CosmeticsPlayer cosmeticsPlayer = new CosmeticsPlayer(player);
 
                 try (ResultSet rs = stmt.executeQuery()) {
                     if (rs.next()) {
@@ -91,19 +91,19 @@ public class DatabaseManager {
                         String colorName = rs.getString("active_chat_color");
 
                         if (trailName != null && !trailName.isEmpty()) {
-                            player.setActiveParticleTrail(plugin.getCosmeticsManager().getParticleTrail(trailName));
-                            player.setActiveBlockTrail(plugin.getCosmeticsManager().getBlockTrail(trailName));
+                            cosmeticsPlayer.setActiveParticleTrail(plugin.getCosmeticsManager().getParticleTrail(trailName));
+                            cosmeticsPlayer.setActiveBlockTrail(plugin.getCosmeticsManager().getBlockTrail(trailName));
                         }
                         if (tagName != null && !tagName.isEmpty())
-                            player.setActiveTag(plugin.getCosmeticsManager().getTag(tagName));
+                            cosmeticsPlayer.setActiveTag(plugin.getCosmeticsManager().getTag(tagName));
                         if (pinName != null && !pinName.isEmpty())
-                            player.setActivePin(plugin.getCosmeticsManager().getPin(pinName));
+                            cosmeticsPlayer.setActivePin(plugin.getCosmeticsManager().getPin(pinName));
                         if (colorName != null && !colorName.isEmpty())
-                            player.setActiveChatColor(plugin.getCosmeticsManager().getChatColor(colorName));
+                            cosmeticsPlayer.setActiveChatColor(plugin.getCosmeticsManager().getChatColor(colorName));
                     }
                 }
 
-                future.complete(player);
+                future.complete(cosmeticsPlayer);
             } catch (SQLException e) {
                 future.completeExceptionally(e);
                 plugin.getLogger().log(Level.SEVERE, "Error loading player cosmetics from database!", e);

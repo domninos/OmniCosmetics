@@ -20,7 +20,7 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        plugin.getPlayerManager().loadPlayer(event.getPlayer().getUniqueId())
+        plugin.getPlayerManager().loadPlayer(event.getPlayer())
                 .exceptionally(throwable -> {
                     plugin.getLogger().log(Level.WARNING, "Failed to load player data", throwable);
                     return null;
