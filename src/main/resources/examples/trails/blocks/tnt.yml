@@ -3,11 +3,6 @@ enabled: true
 blocks:
   TNT:
     chance: 0.5
-  GUNPOWDER:
-    chance: 0.3
-  REDSTONE_BLOCK:
-    chance: 0.2
-radius: 2
 permission: omniosmetics.trail.tnt
 stars: 1
 command: /trail <player> tnt
