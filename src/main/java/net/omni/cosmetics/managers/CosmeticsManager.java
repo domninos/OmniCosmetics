@@ -58,7 +58,45 @@ public class CosmeticsManager {
         chatColorDir.mkdirs();
 
         saveExample("trails/particles/fairy.yml");
+        saveExample("trails/particles/flame.yml");
+        saveExample("trails/particles/snow.yml");
+        saveExample("trails/particles/heart.yml");
+        saveExample("trails/particles/cloud.yml");
+        saveExample("trails/particles/portal.yml");
+        saveExample("trails/particles/enchant.yml");
+        saveExample("trails/particles/crit.yml");
+        saveExample("trails/particles/smoke.yml");
+        saveExample("trails/particles/soul.yml");
+        saveExample("trails/particles/note.yml");
+        saveExample("trails/particles/wax.yml");
+        saveExample("trails/particles/drip.yml");
+        saveExample("trails/particles/tear.yml");
+        saveExample("trails/particles/spark.yml");
+        saveExample("trails/particles/dragon.yml");
+        saveExample("trails/particles/nautilus.yml");
+        saveExample("trails/particles/glow.yml");
+        saveExample("trails/particles/ink.yml");
+        saveExample("trails/particles/damage.yml");
+        saveExample("trails/particles/sweep.yml");
+        saveExample("trails/particles/totem.yml");
+        saveExample("trails/particles/dust.yml");
+        saveExample("trails/particles/sculk.yml");
         saveExample("trails/blocks/tnt.yml");
+        saveExample("trails/blocks/stone.yml");
+        saveExample("trails/blocks/cobblestone.yml");
+        saveExample("trails/blocks/brick.yml");
+        saveExample("trails/blocks/nether_brick.yml");
+        saveExample("trails/blocks/redstone.yml");
+        saveExample("trails/blocks/diamond.yml");
+        saveExample("trails/blocks/gold.yml");
+        saveExample("trails/blocks/iron.yml");
+        saveExample("trails/blocks/emerald.yml");
+        saveExample("trails/blocks/lapis.yml");
+        saveExample("trails/blocks/coal.yml");
+        saveExample("trails/blocks/obsidian.yml");
+        saveExample("trails/blocks/glowstone.yml");
+        saveExample("trails/blocks/quartz.yml");
+        saveExample("trails/blocks/purpur.yml");
         saveExample("tags/vip.yml");
         saveExample("pins/smile.yml");
         saveExample("chatcolors/red.yml");
@@ -93,6 +131,7 @@ public class CosmeticsManager {
     }
 
     public void flush() {
+        byName.values().forEach(Cosmetic::flush);
         byName.clear();
         particleTrails.clear();
         blockTrails.clear();
@@ -152,7 +191,7 @@ public class CosmeticsManager {
                 String itemType = item != null ? item.getString("type", "BARRIER") : "BARRIER";
                 List<String> itemLore = item != null ? item.getStringList("lore") : List.of();
 
-                ParticleTrail trail = new ParticleTrail(name, enabled, CosmeticCategory.PARTICLE_TRAIL, permission, stars, command, operator, itemName, itemLore, configs);
+                ParticleTrail trail = new ParticleTrail(name, enabled, CosmeticCategory.PARTICLE_TRAIL, permission, stars, command, operator, itemName, itemLore, itemType, configs);
                 particleTrails.put(name.toLowerCase(), trail);
                 byName.put(name.toLowerCase(), trail);
             } catch (Exception e) {
@@ -221,7 +260,7 @@ public class CosmeticsManager {
                 String itemType = item != null ? item.getString("type", "BARRIER") : "BARRIER";
                 List<String> itemLore = item != null ? item.getStringList("lore") : List.of();
 
-                BlockTrail trail = new BlockTrail(name, enabled, CosmeticCategory.BLOCK_TRAIL, permission, stars, command, operator, itemName, itemLore, configs, radius);
+                BlockTrail trail = new BlockTrail(name, enabled, CosmeticCategory.BLOCK_TRAIL, permission, stars, command, operator, itemName, itemLore, itemType, configs, radius);
                 blockTrails.put(name.toLowerCase(), trail);
                 byName.put(name.toLowerCase(), trail);
             } catch (Exception e) {
@@ -250,7 +289,7 @@ public class CosmeticsManager {
                 String itemType = item != null ? item.getString("type", "NAME_TAG") : "NAME_TAG";
                 List<String> itemLore = item != null ? item.getStringList("lore") : List.of();
 
-                CosmeticsTag obj = new CosmeticsTag(name, enabled, CosmeticCategory.TAG, permission, stars, command, operator, itemName, itemLore, tag);
+                CosmeticsTag obj = new CosmeticsTag(name, enabled, CosmeticCategory.TAG, permission, stars, command, operator, itemName, itemLore, itemType, tag);
                 tags.put(name.toLowerCase(), obj);
                 byName.put(name.toLowerCase(), obj);
             } catch (Exception e) {
@@ -279,7 +318,7 @@ public class CosmeticsManager {
                 String itemType = item != null ? item.getString("type", "PLAYER_HEAD") : "PLAYER_HEAD";
                 List<String> itemLore = item != null ? item.getStringList("lore") : List.of();
 
-                CosmeticsPin obj = new CosmeticsPin(name, enabled, CosmeticCategory.PIN, permission, stars, command, operator, itemName, itemLore, pin);
+                CosmeticsPin obj = new CosmeticsPin(name, enabled, CosmeticCategory.PIN, permission, stars, command, operator, itemName, itemLore, itemType, pin);
                 pins.put(name.toLowerCase(), obj);
                 byName.put(name.toLowerCase(), obj);
             } catch (Exception e) {
@@ -308,7 +347,7 @@ public class CosmeticsManager {
                 String itemType = item != null ? item.getString("type", "BARRIER") : "BARRIER";
                 List<String> itemLore = item != null ? item.getStringList("lore") : List.of();
 
-                CosmeticsChatColor obj = new CosmeticsChatColor(name, enabled, CosmeticCategory.CHAT_COLOR, permission, stars, command, operator, itemName, itemLore, color);
+                CosmeticsChatColor obj = new CosmeticsChatColor(name, enabled, CosmeticCategory.CHAT_COLOR, permission, stars, command, operator, itemName, itemLore, itemType, color);
                 chatColors.put(name.toLowerCase(), obj);
                 byName.put(name.toLowerCase(), obj);
             } catch (Exception e) {
