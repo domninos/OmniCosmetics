@@ -9,8 +9,8 @@ import java.util.List;
 public class CosmeticsTag extends Cosmetic {
     private final String tag;
 
-    public CosmeticsTag(String name, boolean enabled, CosmeticCategory category, String permission, int stars, String command, CosmeticOperator operator, String itemName, List<String> itemLore, String tag) {
-        super(name, enabled, category, permission, stars, command, operator, itemName, itemLore);
+    public CosmeticsTag(String name, boolean enabled, CosmeticCategory category, String permission, int stars, String command, CosmeticOperator operator, String itemName, List<String> itemLore, String itemType, String tag) {
+        super(name, enabled, category, permission, stars, command, operator, itemName, itemLore, itemType);
         this.tag = tag;
     }
 

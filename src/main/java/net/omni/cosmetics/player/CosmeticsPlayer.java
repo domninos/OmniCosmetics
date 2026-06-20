@@ -5,20 +5,27 @@ import net.omni.cosmetics.effect.chat.CosmeticsPin;
 import net.omni.cosmetics.effect.chat.CosmeticsTag;
 import net.omni.cosmetics.effect.trails.BlockTrail;
 import net.omni.cosmetics.effect.trails.ParticleTrail;
+import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
 public class CosmeticsPlayer {
 
     private final UUID uuid;
+    private final Player player;
     private CosmeticsTag activeTag;
     private CosmeticsPin activePin;
     private CosmeticsChatColor activeChatColor;
     private BlockTrail activeBlockTrail;
     private ParticleTrail activeParticleTrail;
 
-    public CosmeticsPlayer(UUID uuid) {
-        this.uuid = uuid;
+    public CosmeticsPlayer(Player player) {
+        this.player = player;
+        this.uuid = player.getUniqueId();
+    }
+
+    public Player getPlayer() {
+        return player;
     }
 
     public CosmeticsTag getActiveTag() {

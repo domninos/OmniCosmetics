@@ -13,8 +13,9 @@ public abstract class Cosmetic {
     private final CosmeticOperator operator;
     private final String itemName;
     private final List<String> itemLore;
+    private final String itemType;
 
-    public Cosmetic(String name, boolean enabled, CosmeticCategory category, String permission, int stars, String command, CosmeticOperator operator, String itemName, List<String> itemLore) {
+    public Cosmetic(String name, boolean enabled, CosmeticCategory category, String permission, int stars, String command, CosmeticOperator operator, String itemName, List<String> itemLore, String itemType) {
         this.name = name;
         this.enabled = enabled;
         this.category = category;
@@ -24,6 +25,7 @@ public abstract class Cosmetic {
         this.operator = operator;
         this.itemName = itemName;
         this.itemLore = itemLore;
+        this.itemType = itemType;
     }
 
     public String getName() {
@@ -60,6 +62,10 @@ public abstract class Cosmetic {
 
     public List<String> getItemLore() {
         return itemLore;
+    }
+
+    public String getItemType() {
+        return itemType;
     }
 
     public void flush() {

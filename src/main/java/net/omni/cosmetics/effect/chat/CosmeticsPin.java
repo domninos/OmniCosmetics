@@ -9,8 +9,8 @@ import java.util.List;
 public class CosmeticsPin extends Cosmetic {
     private final String pin;
 
-    public CosmeticsPin(String name, boolean enabled, CosmeticCategory category, String permission, int stars, String command, CosmeticOperator operator, String itemName, List<String> itemLore, String pin) {
-        super(name, enabled, category, permission, stars, command, operator, itemName, itemLore);
+    public CosmeticsPin(String name, boolean enabled, CosmeticCategory category, String permission, int stars, String command, CosmeticOperator operator, String itemName, List<String> itemLore, String itemType, String pin) {
+        super(name, enabled, category, permission, stars, command, operator, itemName, itemLore, itemType);
         this.pin = pin;
     }
 

@@ -130,8 +130,9 @@ public class ParticleConfig {
             return null;
         }
         if (particle == Particle.BLOCK || particle == Particle.FALLING_DUST || particle == Particle.BLOCK_MARKER) {
-            if (blockMaterial != null && blockMaterial.isBlock())
-                return blockMaterial.createBlockData();
+            Material mat = blockMaterial != null ? blockMaterial : material;
+            if (mat != null && mat.isBlock())
+                return mat.createBlockData();
 
             return null;
         }
@@ -143,6 +144,9 @@ public class ParticleConfig {
 
         if (particle == Particle.DRAGON_BREATH)
             return 0.0f;
+
+        if (particle == Particle.INSTANT_EFFECT || particle.name().equals("EFFECT"))
+            return new Particle.Spell(color != null ? color : Color.WHITE, 1.0f);
 
         if (particle == Particle.ENTITY_EFFECT)
             return color != null ? color : Color.WHITE;

@@ -9,8 +9,8 @@ public class BlockTrail extends CosmeticsTrail {
     private final List<BlockConfig> blockConfigs;
     private final int radius;
 
-    public BlockTrail(String name, boolean enabled, CosmeticCategory category, String permission, int stars, String command, CosmeticOperator operator, String itemName, List<String> itemLore, List<BlockConfig> blockConfigs, int radius) {
-        super(name, enabled, category, permission, stars, command, operator, itemName, itemLore);
+    public BlockTrail(String name, boolean enabled, CosmeticCategory category, String permission, int stars, String command, CosmeticOperator operator, String itemName, List<String> itemLore, String itemType, List<BlockConfig> blockConfigs, int radius) {
+        super(name, enabled, category, permission, stars, command, operator, itemName, itemLore, itemType);
         this.blockConfigs = blockConfigs;
         this.radius = radius;
     }
