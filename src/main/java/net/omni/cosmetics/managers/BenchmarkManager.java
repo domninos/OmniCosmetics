@@ -1,9 +1,11 @@
 package net.omni.cosmetics.managers;
 
 import net.omni.cosmetics.OmniCosmetics;
+import net.omni.cosmetics.effect.trails.BlockConfig;
 import net.omni.cosmetics.effect.trails.ParticleConfig;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -23,6 +25,7 @@ public class BenchmarkManager {
     private final OmniCosmetics plugin;
     private final Map<UUID, Integer> activePlayers = new ConcurrentHashMap<>();
     private List<ParticleConfig> pool = List.of();
+    private List<BlockConfig> blockPool = List.of();
     private int tickCounter;
     private long windowTickTime;
     private int windowEntities;
@@ -67,8 +70,13 @@ public class BenchmarkManager {
         pool = plugin.getCosmeticsManager().getParticleTrails().stream()
                 .flatMap(t -> t.getParticleConfigs().stream())
                 .collect(Collectors.toList());
+        blockPool = plugin.getCosmeticsManager().getBlockTrails().stream()
+                .flatMap(t -> t.getBlockConfigs().stream())
+                .collect(Collectors.toList());
         if (pool.isEmpty())
             plugin.sendConsole("<red>[Benchmark] No particle configs found in loaded trails</red>");
+        if (blockPool.isEmpty())
+            plugin.sendConsole("<red>[Benchmark] No block configs found in loaded trails</red>");
     }
 
     public void tick() {
@@ -100,10 +108,17 @@ public class BenchmarkManager {
                         if (!(entity instanceof LivingEntity living)) continue;
                         if (living instanceof Player p && p.equals(player)) continue;
                         entitiesThisTick++;
-                        if (pool.isEmpty()) continue;
-                        ParticleConfig pc = pool.get(ThreadLocalRandom.current().nextInt(pool.size()));
-                        pc.spawn(world, living.getX(), living.getY() + 1.0, living.getZ());
-                        particlesThisTick++;
+                        if (!pool.isEmpty()) {
+                            ParticleConfig pc = pool.get(ThreadLocalRandom.current().nextInt(pool.size()));
+                            pc.spawn(world, living.getX(), living.getY() + 1.0, living.getZ());
+                            particlesThisTick++;
+                        }
+                        if (!blockPool.isEmpty()) {
+                            BlockConfig bc = blockPool.get(ThreadLocalRandom.current().nextInt(blockPool.size()));
+                            Location blockLoc = new Location(world, living.getX(), living.getY(), living.getZ()).subtract(0, 1, 0);
+                            plugin.getBlockTrailManager().placeBenchmarkBlock(uuid, bc, blockLoc);
+                            particlesThisTick++;
+                        }
                     }
                 }
             }
