@@ -3,14 +3,15 @@ package net.omni.cosmetics.db;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import net.omni.cosmetics.OmniCosmetics;
+import net.omni.cosmetics.player.CosmeticsPlayer;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.*;
-import java.util.List;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
@@ -18,7 +19,6 @@ import java.util.logging.Level;
 public class DatabaseManager {
 
     private final OmniCosmetics plugin;
-
     private HikariDataSource dataSource;
 
     public DatabaseManager(OmniCosmetics plugin) {
@@ -26,40 +26,38 @@ public class DatabaseManager {
     }
 
     public void initDatabase() {
-        File dbFile = new File(plugin.getDataFolder(), "hoppers.db");
+        File dbFile = new File(plugin.getDataFolder(), "cosmetics.db");
 
         if (!dbFile.exists()) {
             try {
                 if (dbFile.createNewFile())
-                    plugin.getLogger().log(Level.INFO, "Successfully created hoppers.db!");
+                    plugin.getLogger().log(Level.INFO, "Successfully created cosmetics.db!");
             } catch (IOException e) {
-                plugin.getLogger().log(Level.SEVERE, "Could not create hoppers.db!", e);
+                plugin.getLogger().log(Level.SEVERE, "Could not create cosmetics.db!", e);
             }
         }
 
         HikariConfig config = new HikariConfig();
-
         config.setJdbcUrl("jdbc:sqlite:" + dbFile.getAbsolutePath());
-        config.setPoolName("ChunkHopperPool");
+        config.setPoolName("OmniCosmeticsPool");
         config.setMaximumPoolSize(1);
-        config.setConnectionTimeout(5000); // 5 seconds timeout
-        config.setLeakDetectionThreshold(2000); // checks if a connection is bleeding
+        config.setConnectionTimeout(5000);
+        config.setLeakDetectionThreshold(2000);
 
         this.dataSource = new HikariDataSource(config);
 
-        // create table with all columns
         try (Connection conn = getConnection();
-             Statement stmt = conn.createStatement()) {
-            stmt.execute("""
-                    CREATE TABLE IF NOT EXISTS chunk_hoppers (
-                        location_key TEXT PRIMARY KEY,
-                        owner_uuid TEXT,
-                        base64_items TEXT,
-                        whitelist_base64 TEXT,
-                        blacklist_base64 TEXT);
-                    """);
-            stmt.execute("PRAGMA journal_mode=WAL");
-            migrateSchema(conn);
+             PreparedStatement stmt = conn.prepareStatement(
+                     "CREATE TABLE IF NOT EXISTS player_cosmetics (" +
+                             "uuid TEXT PRIMARY KEY," +
+                             "active_trail_name TEXT," +
+                             "active_tag TEXT," +
+                             "active_pin TEXT," +
+                             "active_chat_color TEXT)")) {
+            stmt.execute();
+            try (PreparedStatement wal = conn.prepareStatement("PRAGMA journal_mode=WAL")) {
+                wal.execute();
+            }
         } catch (SQLException e) {
             plugin.getLogger().log(Level.SEVERE, "Error while creating the database!", e);
         }
@@ -70,136 +68,76 @@ public class DatabaseManager {
     public Connection getConnection() throws SQLException {
         if (dataSource == null)
             throw new SQLException("DataSource not initialized");
-
         return dataSource.getConnection();
     }
 
-
-    public CompletableFuture<List<ItemStack>> fetchItems(Location location) {
-        return fetchColumn(location, "base64_items");
-    }
-
-    private CompletableFuture<List<ItemStack>> fetchColumn(Location location, String column) {
-        String locationKey = getLocationKey(location);
-
-        if (locationKey.isBlank())
-            return CompletableFuture.completedFuture(List.of());
-
-        CompletableFuture<List<ItemStack>> future = new CompletableFuture<>();
+    public CompletableFuture<CosmeticsPlayer> loadPlayer(UUID uuid) {
+        CompletableFuture<CosmeticsPlayer> future = new CompletableFuture<>();
 
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            String query = "SELECT " + column + " FROM chunk_hoppers WHERE location_key = ?";
+            String query = "SELECT active_trail_name, active_tag, active_pin, active_chat_color FROM player_cosmetics WHERE uuid = ?";
 
             try (Connection connection = getConnection();
                  PreparedStatement stmt = connection.prepareStatement(query)) {
+                stmt.setString(1, uuid.toString());
 
-                stmt.setString(1, locationKey);
+                CosmeticsPlayer player = new CosmeticsPlayer(uuid);
 
                 try (ResultSet rs = stmt.executeQuery()) {
                     if (rs.next()) {
-                        String base64 = rs.getString(column);
-                        if (base64 != null && !base64.isEmpty())
-                            future.complete(ItemSerializationUtil.fromBase64(base64));
-                        else
-                            future.complete(List.of());
-                    } else {
-                        future.complete(List.of());
+                        String trailName = rs.getString("active_trail_name");
+                        String tagName = rs.getString("active_tag");
+                        String pinName = rs.getString("active_pin");
+                        String colorName = rs.getString("active_chat_color");
+
+                        if (trailName != null && !trailName.isEmpty()) {
+                            player.setActiveParticleTrail(plugin.getCosmeticsManager().getParticleTrail(trailName));
+                            player.setActiveBlockTrail(plugin.getCosmeticsManager().getBlockTrail(trailName));
+                        }
+                        if (tagName != null && !tagName.isEmpty())
+                            player.setActiveTag(plugin.getCosmeticsManager().getTag(tagName));
+                        if (pinName != null && !pinName.isEmpty())
+                            player.setActivePin(plugin.getCosmeticsManager().getPin(pinName));
+                        if (colorName != null && !colorName.isEmpty())
+                            player.setActiveChatColor(plugin.getCosmeticsManager().getChatColor(colorName));
                     }
                 }
+
+                future.complete(player);
             } catch (SQLException e) {
                 future.completeExceptionally(e);
-                plugin.getLogger().log(Level.SEVERE, "Error while fetching " + column + " from database!", e);
+                plugin.getLogger().log(Level.SEVERE, "Error loading player cosmetics from database!", e);
             }
         });
 
         return future;
     }
 
-
-    public CompletableFuture<List<ItemStack>> fetchWhitelist(Location location) {
-        return fetchColumn(location, "whitelist_base64");
+    public void savePlayer(CosmeticsPlayer player) {
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> savePlayerSync(player));
     }
 
-    public CompletableFuture<List<ItemStack>> fetchBlacklist(Location location) {
-        return fetchColumn(location, "blacklist_base64");
-    }
-
-    private void executeSave(String locationKey, String ownerUUID,
-                             String base64Items, String base64Whitelist,
-                             String base64Blacklist) {
-        String query = """
-                INSERT OR REPLACE INTO chunk_hoppers
-                    (location_key, owner_uuid, base64_items, whitelist_base64, blacklist_base64)
-                VALUES (?, ?, ?, ?, ?);
-                """;
+    public void savePlayerSync(CosmeticsPlayer player) {
+        String query = "INSERT OR REPLACE INTO player_cosmetics (uuid, active_trail_name, active_tag, active_pin, active_chat_color) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection connection = getConnection();
              PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setString(1, locationKey);
-            stmt.setString(2, ownerUUID);
-            stmt.setString(3, base64Items);
-            stmt.setString(4, base64Whitelist);
-            stmt.setString(5, base64Blacklist);
+            stmt.setString(1, player.getUUID().toString());
+
+            String trailName = null;
+            if (player.getActiveParticleTrail() != null)
+                trailName = player.getActiveParticleTrail().getName();
+            else if (player.getActiveBlockTrail() != null)
+                trailName = player.getActiveBlockTrail().getName();
+            stmt.setString(2, trailName);
+
+            stmt.setString(3, player.getActiveTag() != null ? player.getActiveTag().getName() : null);
+            stmt.setString(4, player.getActivePin() != null ? player.getActivePin().getName() : null);
+            stmt.setString(5, player.getActiveChatColor() != null ? player.getActiveChatColor().getName() : null);
             stmt.executeUpdate();
         } catch (SQLException e) {
-            plugin.getLogger().log(Level.SEVERE, "Error while saving to database!", e);
+            plugin.getLogger().log(Level.SEVERE, "Error saving player cosmetics to database!", e);
         }
-    }
-
-    public void saveFullSync(Location location, String ownerUUID, List<ItemStack> items,
-                             List<ItemStack> whitelist, List<ItemStack> blacklist) {
-    }
-
-    public void saveAsync(Location location, List<ItemStack> items) {
-
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            String query = "INSERT OR REPLACE INTO chunk_hoppers (location_key, base64_items) VALUES (?, ?);";
-
-            try (Connection connection = getConnection();
-                 PreparedStatement stmt = connection.prepareStatement(query)) {
-                stmt.executeUpdate();
-            } catch (SQLException e) {
-                plugin.getLogger().log(Level.SEVERE, "Error while saving the database!", e);
-            }
-        });
-    }
-
-    public void deleteLocation(Location location) {
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> executeDelete(locationKey));
-    }
-
-    private void executeDelete(String locationKey) {
-        String query = "DELETE FROM chunk_hoppers WHERE location_key = ?";
-
-        try (Connection connection = getConnection();
-             PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setString(1, locationKey);
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            plugin.getLogger().log(Level.SEVERE, "Error while deleting from database!", e);
-        }
-    }
-
-    public void deleteLocationSync(Location location) {
-//        executeDelete(location);
-    }
-
-    public int countHoppersSync(UUID ownerUUID) {
-        String query = "SELECT COUNT(*) FROM chunk_hoppers WHERE owner_uuid = ?";
-
-        try (Connection connection = getConnection();
-             PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setString(1, ownerUUID.toString());
-
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next())
-                    return rs.getInt(1);
-            }
-        } catch (SQLException e) {
-            plugin.getLogger().log(Level.SEVERE, "Error while counting hoppers in database!", e);
-        }
-
-        return 0;
     }
 
     public void closePool() {
