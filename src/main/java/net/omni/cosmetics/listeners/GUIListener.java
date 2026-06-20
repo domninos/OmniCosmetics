@@ -10,6 +10,7 @@ import net.omni.cosmetics.effect.trails.BlockTrail;
 import net.omni.cosmetics.effect.trails.ParticleTrail;
 import net.omni.cosmetics.managers.GUIManager;
 import net.omni.cosmetics.player.CosmeticsPlayer;
+import net.omni.cosmetics.util.config.ConfigUtil;
 import net.omni.cosmetics.util.config.Messages;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -37,19 +38,73 @@ public class GUIListener implements Listener {
         int slot = event.getSlot();
 
         GUIManager guiManager = plugin.getGuiManager();
+        ConfigUtil config = plugin.getConfigUtil();
         CosmeticCategory category = guiManager.getOpenCategory(player);
 
         if (category == null) {
-            CosmeticCategory cat = plugin.getConfigUtil().getCategoryBySlot(slot);
-            if (cat != null)
-                guiManager.openCategory(player, cat);
+            handleMainMenuClick(player, guiManager, config, slot);
+        } else {
+            handleCategoryClick(player, guiManager, config, category, slot);
+        }
+    }
+
+    private void handleMainMenuClick(Player player, GUIManager guiManager, ConfigUtil config, int slot) {
+        if (slot == config.getGuiMainMenuExit().slot()) {
+            player.closeInventory();
             return;
         }
 
-        List<? extends Cosmetic> cosmetics = guiManager.getFiltered(category, player);
-        if (slot < 0 || slot >= cosmetics.size()) return;
+        CosmeticCategory cat = config.getCategoryBySlot(slot);
+        if (cat != null) {
+            guiManager.openCategory(player, cat);
+        }
+    }
 
-        Cosmetic selected = cosmetics.get(slot);
+    private void handleCategoryClick(Player player, GUIManager guiManager, ConfigUtil config, CosmeticCategory category, int slot) {
+        int backSlot = config.getGuiCategoryBack().slot();
+        int prevSlot = config.getGuiCategoryPrevious().slot();
+        int nextSlot = config.getGuiCategoryNext().slot();
+
+        if (slot == backSlot) {
+            guiManager.openMenu(player);
+            return;
+        }
+
+        if (slot == prevSlot) {
+            int page = guiManager.getCurrentPage(player);
+            if (page > 0) {
+                guiManager.openCategory(player, category, page - 1);
+            }
+            return;
+        }
+
+        if (slot == nextSlot) {
+            List<? extends Cosmetic> cosmetics = guiManager.getFiltered(category, player);
+            int totalPages = Math.max(1, (int) Math.ceil((double) cosmetics.size() / GUIManager.CONTENT_SLOTS.length));
+            int page = guiManager.getCurrentPage(player);
+            if (page < totalPages - 1) {
+                guiManager.openCategory(player, category, page + 1);
+            }
+            return;
+        }
+
+        int contentIndex = -1;
+        for (int i = 0; i < GUIManager.CONTENT_SLOTS.length; i++) {
+            if (GUIManager.CONTENT_SLOTS[i] == slot) {
+                contentIndex = i;
+                break;
+            }
+        }
+
+        if (contentIndex < 0) return;
+
+        int page = guiManager.getCurrentPage(player);
+        List<? extends Cosmetic> cosmetics = guiManager.getFiltered(category, player);
+        int cosmeticIndex = page * GUIManager.CONTENT_SLOTS.length + contentIndex;
+
+        if (cosmeticIndex >= cosmetics.size()) return;
+
+        Cosmetic selected = cosmetics.get(cosmeticIndex);
         CosmeticsPlayer cp = plugin.getPlayerManager().getPlayer(player.getUniqueId());
         if (cp == null) return;
 
