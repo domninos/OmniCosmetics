@@ -15,6 +15,10 @@ public class MessageUtil {
         renderer = r;
     }
 
+    public static ChatRenderer getRenderer() {
+        return renderer;
+    }
+
     public static String parse(String msg) {
         return renderer.parse(msg);
     }

@@ -10,7 +10,15 @@ public enum Messages {
     USAGE("usage", "<red>Invalid arguments. Usage: %usage%</red>"),
     UNKNOWN_COMMAND("unknown_cmd", "<red>Unknown command.</red>"),
 
-    RELOADED("reloaded", "<green>config.yml and messages.yml have been reloaded.</green>");
+    RELOADED("reloaded", "<green>Successfully reloaded configs and cosmetics.</green>"),
+
+    TRAIL_NOT_FOUND("trail_not_found", "<red>Trail '%name%' not found.</red>"),
+    TRAIL_SET("trail_set", "<green>Set %player%'s trail to %name%.</green>"),
+    TRAIL_REMOVED("trail_removed", "<green>Removed %player%'s trail.</green>"),
+    COSMETIC_EQUIPPED("cosmetic_equipped", "<green>Equipped %name%.</green>"),
+    COSMETIC_REMOVED("cosmetic_removed", "<green>Removed %name%.</green>"),
+    PLAYER_NOT_FOUND("player_not_found", "<red>Player '%name%' not found.</red>"),
+    NO_COSMETICS("no_cosmetics", "<red>You don't have any cosmetics in this category.</red>");
 
     private final String path;
     private final Object defaultVal;
