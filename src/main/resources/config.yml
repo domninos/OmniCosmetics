@@ -1,0 +1,50 @@
+# OmniCosmetics Configuration
+
+# Interval in ticks (1 tick = 50ms) for the trail rendering task
+trail-interval: 5
+
+# Maximum distance (in blocks) for trail particles to be visible to other players
+trail-render-distance: 32
+
+# Whether particle trails are enabled
+particle-trails-enabled: true
+
+# Whether block trails are enabled
+block-trails-enabled: true
+
+# GUI main menu configuration
+gui:
+  main-menu:
+    title: "  <#AAFFAA>Cosmetics</#AAFFAA>"
+    size: 27
+    items:
+      - slot: 10
+        material: FIREWORK_STAR
+        category: PARTICLE_TRAIL
+        name: "<#AAFFAA>Particle Trails</#AAFFAA>"
+        lore:
+          - "<gray>Particle effects that follow you</gray>"
+      - slot: 12
+        material: GRASS_BLOCK
+        category: BLOCK_TRAIL
+        name: "<#FFAA00>Block Trails</#FFAA00>"
+        lore:
+          - "<gray>Block trails that follow you</gray>"
+      - slot: 14
+        material: NAME_TAG
+        category: TAG
+        name: "<#55FFFF>Tags</#55FFFF>"
+        lore:
+          - "<gray>Name tags for chat</gray>"
+      - slot: 16
+        material: PLAYER_HEAD
+        category: PIN
+        name: "<#FF55FF>Pins</#FF55FF>"
+        lore:
+          - "<gray>Emoji pins for chat</gray>"
+      - slot: 22
+        material: RED_DYE
+        category: CHAT_COLOR
+        name: "<#FF5555>Chat Colors</#FF5555>"
+        lore:
+          - "<gray>Chat message colors</gray>"
