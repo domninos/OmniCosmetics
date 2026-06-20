@@ -7,3 +7,25 @@ api-version: '1.21.11'
 load: POSTWORLD
 
 authors: [ domninos ]
+
+commands:
+  cosmetics:
+    description: Main cosmetics command
+    aliases: [c, cosmetic]
+  trail:
+    description: Set a player's trail
+    aliases: [trails]
+
+permissions:
+  omnicosmetics.reload:
+    description: Allows reloading the plugin
+    default: op
+  omnicosmetics.trail.admin:
+    description: Allows setting trails for other players
+    default: op
+  omnicosmetics.menu:
+    description: Allows opening the cosmetics menu
+    default: true
+  omnicosmetics.benchmark:
+    description: Allows toggling benchmark mode
+    default: op
