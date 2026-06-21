@@ -1,7 +1,7 @@
 name: red
 enabled: true
 color: "<red>"
-permission: omniosmetics.chatcolor.red
+permission: omnicosmetics.chatcolor.red
 stars: 1
 command: /chatcolor <player> red
 operator: console

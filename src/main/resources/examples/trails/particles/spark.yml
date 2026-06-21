@@ -1,6 +1,6 @@
 name: spark
 enabled: true
-permission: omniosmetics.trail.spark
+permission: omnicosmetics.trail.spark
 stars: 1
 command: /trail <player> spark
 operator: console

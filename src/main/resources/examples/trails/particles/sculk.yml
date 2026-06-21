@@ -1,6 +1,6 @@
 name: sculk
 enabled: true
-permission: omniosmetics.trail.sculk
+permission: omnicosmetics.trail.sculk
 stars: 1
 command: /trail <player> sculk
 operator: console

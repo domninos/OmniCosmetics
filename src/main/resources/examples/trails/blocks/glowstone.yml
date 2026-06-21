@@ -1,10 +1,10 @@
-﻿name: glowstone
+name: glowstone
 enabled: true
 blocks:
   GLOWSTONE:
     chance: 0.6
 radius: 1
-permission: omniosmetics.trail.glowstone
+permission: omnicosmetics.trail.glowstone
 stars: 1
 command: /trail <player> glowstone
 operator: console

@@ -1,6 +1,6 @@
 name: flame
 enabled: true
-permission: omniosmetics.trail.flame
+permission: omnicosmetics.trail.flame
 stars: 1
 command: /trail <player> flame
 operator: console

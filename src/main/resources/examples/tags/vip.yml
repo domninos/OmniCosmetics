@@ -1,7 +1,7 @@
 name: vip
 enabled: true
 tag: "[VIP]"
-permission: omniosmetics.tag.vip
+permission: omnicosmetics.tag.vip
 stars: 2
 command: /tag <player> vip
 operator: console

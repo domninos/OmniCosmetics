@@ -1,10 +1,10 @@
-﻿name: emerald
+name: emerald
 enabled: true
 blocks:
   EMERALD_BLOCK:
     chance: 0.5
 radius: 1
-permission: omniosmetics.trail.emerald
+permission: omnicosmetics.trail.emerald
 stars: 1
 command: /trail <player> emerald
 operator: console

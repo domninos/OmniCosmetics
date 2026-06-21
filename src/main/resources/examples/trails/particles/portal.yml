@@ -1,6 +1,6 @@
 name: portal
 enabled: true
-permission: omniosmetics.trail.portal
+permission: omnicosmetics.trail.portal
 stars: 1
 command: /trail <player> portal
 operator: console

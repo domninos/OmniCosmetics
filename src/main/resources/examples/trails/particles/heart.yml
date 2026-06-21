@@ -1,6 +1,6 @@
 name: heart
 enabled: true
-permission: omniosmetics.trail.heart
+permission: omnicosmetics.trail.heart
 stars: 1
 command: /trail <player> heart
 operator: console

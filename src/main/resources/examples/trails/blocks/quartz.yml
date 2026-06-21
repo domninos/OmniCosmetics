@@ -1,4 +1,4 @@
-﻿name: quartz
+name: quartz
 enabled: true
 blocks:
   QUARTZ_BLOCK:
@@ -8,7 +8,7 @@ blocks:
   SMOOTH_QUARTZ:
     chance: 0.2
 radius: 1
-permission: omniosmetics.trail.quartz
+permission: omnicosmetics.trail.quartz
 stars: 1
 command: /trail <player> quartz
 operator: console

@@ -1,10 +1,10 @@
-﻿name: cobblestone
+name: cobblestone
 enabled: true
 blocks:
   COBBLESTONE:
     chance: 0.6
 radius: 0
-permission: omniosmetics.trail.cobblestone
+permission: omnicosmetics.trail.cobblestone
 stars: 1
 command: /trail <player> cobblestone
 operator: console

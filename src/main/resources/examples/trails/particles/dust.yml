@@ -1,6 +1,6 @@
 name: dust
 enabled: true
-permission: omniosmetics.trail.dust
+permission: omnicosmetics.trail.dust
 stars: 1
 command: /trail <player> dust
 operator: console

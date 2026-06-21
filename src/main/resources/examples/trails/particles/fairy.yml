@@ -1,6 +1,6 @@
 name: fairy
 enabled: true
-permission: omniosmetics.trail.fairy
+permission: omnicosmetics.trail.fairy
 stars: 1
 command: /trail <player> fairy
 operator: console

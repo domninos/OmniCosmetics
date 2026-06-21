@@ -1,6 +1,6 @@
 name: drip
 enabled: true
-permission: omniosmetics.trail.drip
+permission: omnicosmetics.trail.drip
 stars: 1
 command: /trail <player> drip
 operator: console

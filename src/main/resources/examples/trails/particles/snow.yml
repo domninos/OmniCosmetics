@@ -1,6 +1,6 @@
 name: snow
 enabled: true
-permission: omniosmetics.trail.snow
+permission: omnicosmetics.trail.snow
 stars: 1
 command: /trail <player> snow
 operator: console

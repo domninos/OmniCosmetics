@@ -1,10 +1,10 @@
-﻿name: purpur
+name: purpur
 enabled: true
 blocks:
   PURPUR_BLOCK:
     chance: 0.5
 radius: 1
-permission: omniosmetics.trail.purpur
+permission: omnicosmetics.trail.purpur
 stars: 1
 command: /trail <player> purpur
 operator: console

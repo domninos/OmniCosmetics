@@ -1,4 +1,4 @@
-﻿name: brick
+name: brick
 enabled: true
 blocks:
   BRICK:
@@ -6,7 +6,7 @@ blocks:
   STONE_BRICKS:
     chance: 0.3
 radius: 0
-permission: omniosmetics.trail.brick
+permission: omnicosmetics.trail.brick
 stars: 1
 command: /trail <player> brick
 operator: console

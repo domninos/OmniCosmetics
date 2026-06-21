@@ -1,6 +1,6 @@
 name: smoke
 enabled: true
-permission: omniosmetics.trail.smoke
+permission: omnicosmetics.trail.smoke
 stars: 1
 command: /trail <player> smoke
 operator: console

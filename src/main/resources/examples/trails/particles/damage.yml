@@ -1,6 +1,6 @@
 name: damage
 enabled: true
-permission: omniosmetics.trail.damage
+permission: omnicosmetics.trail.damage
 stars: 1
 command: /trail <player> damage
 operator: console

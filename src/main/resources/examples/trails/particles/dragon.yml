@@ -1,6 +1,6 @@
 name: dragon
 enabled: true
-permission: omniosmetics.trail.dragon
+permission: omnicosmetics.trail.dragon
 stars: 1
 command: /trail <player> dragon
 operator: console

@@ -1,7 +1,7 @@
 name: smile
 enabled: true
 pin: "[:)]"
-permission: omniosmetics.pin.smile
+permission: omnicosmetics.pin.smile
 stars: 1
 command: /pin <player> smile
 operator: console

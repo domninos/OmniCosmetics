@@ -1,6 +1,6 @@
 name: wax
 enabled: true
-permission: omniosmetics.trail.wax
+permission: omnicosmetics.trail.wax
 stars: 1
 command: /trail <player> wax
 operator: console

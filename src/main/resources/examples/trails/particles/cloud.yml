@@ -1,6 +1,6 @@
 name: cloud
 enabled: true
-permission: omniosmetics.trail.cloud
+permission: omnicosmetics.trail.cloud
 stars: 1
 command: /trail <player> cloud
 operator: console

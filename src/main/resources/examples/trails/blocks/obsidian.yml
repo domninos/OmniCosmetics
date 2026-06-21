@@ -1,10 +1,10 @@
-﻿name: obsidian
+name: obsidian
 enabled: true
 blocks:
   OBSIDIAN:
     chance: 0.5
 radius: 1
-permission: omniosmetics.trail.obsidian
+permission: omnicosmetics.trail.obsidian
 stars: 1
 command: /trail <player> obsidian
 operator: console

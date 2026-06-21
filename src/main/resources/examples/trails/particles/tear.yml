@@ -1,6 +1,6 @@
 name: tear
 enabled: true
-permission: omniosmetics.trail.tear
+permission: omnicosmetics.trail.tear
 stars: 1
 command: /trail <player> tear
 operator: console

@@ -1,4 +1,4 @@
-﻿name: lapis
+name: lapis
 enabled: true
 blocks:
   LAPIS_BLOCK:
@@ -6,7 +6,7 @@ blocks:
   LAPIS_ORE:
     chance: 0.3
 radius: 1
-permission: omniosmetics.trail.lapis
+permission: omnicosmetics.trail.lapis
 stars: 1
 command: /trail <player> lapis
 operator: console

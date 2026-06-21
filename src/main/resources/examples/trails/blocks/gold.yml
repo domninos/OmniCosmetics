@@ -1,4 +1,4 @@
-﻿name: gold
+name: gold
 enabled: true
 blocks:
   GOLD_BLOCK:
@@ -6,7 +6,7 @@ blocks:
   GOLD_ORE:
     chance: 0.3
 radius: 1
-permission: omniosmetics.trail.gold
+permission: omnicosmetics.trail.gold
 stars: 1
 command: /trail <player> gold
 operator: console

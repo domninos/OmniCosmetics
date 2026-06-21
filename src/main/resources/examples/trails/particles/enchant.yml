@@ -1,6 +1,6 @@
 name: enchant
 enabled: true
-permission: omniosmetics.trail.enchant
+permission: omnicosmetics.trail.enchant
 stars: 1
 command: /trail <player> enchant
 operator: console

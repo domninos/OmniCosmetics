@@ -1,10 +1,10 @@
-﻿name: stone
+name: stone
 enabled: true
 blocks:
   STONE:
     chance: 0.5
 radius: 0
-permission: omniosmetics.trail.stone
+permission: omnicosmetics.trail.stone
 stars: 1
 command: /trail <player> stone
 operator: console

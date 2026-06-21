@@ -1,6 +1,6 @@
 name: ink
 enabled: true
-permission: omniosmetics.trail.ink
+permission: omnicosmetics.trail.ink
 stars: 1
 command: /trail <player> ink
 operator: console

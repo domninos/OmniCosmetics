@@ -1,10 +1,10 @@
-﻿name: diamond
+name: diamond
 enabled: true
 blocks:
   DIAMOND_BLOCK:
     chance: 0.5
 radius: 1
-permission: omniosmetics.trail.diamond
+permission: omnicosmetics.trail.diamond
 stars: 1
 command: /trail <player> diamond
 operator: console

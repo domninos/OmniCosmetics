@@ -1,6 +1,6 @@
 name: sweep
 enabled: true
-permission: omniosmetics.trail.sweep
+permission: omnicosmetics.trail.sweep
 stars: 1
 command: /trail <player> sweep
 operator: console

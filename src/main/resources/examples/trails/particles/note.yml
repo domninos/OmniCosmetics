@@ -1,6 +1,6 @@
 name: note
 enabled: true
-permission: omniosmetics.trail.note
+permission: omnicosmetics.trail.note
 stars: 1
 command: /trail <player> note
 operator: console

@@ -1,4 +1,4 @@
-﻿name: coal
+name: coal
 enabled: true
 blocks:
   COAL_BLOCK:
@@ -6,7 +6,7 @@ blocks:
   COAL_ORE:
     chance: 0.3
 radius: 1
-permission: omniosmetics.trail.coal
+permission: omnicosmetics.trail.coal
 stars: 1
 command: /trail <player> coal
 operator: console

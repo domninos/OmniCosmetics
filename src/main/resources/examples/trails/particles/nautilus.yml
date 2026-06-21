@@ -1,6 +1,6 @@
 name: nautilus
 enabled: true
-permission: omniosmetics.trail.nautilus
+permission: omnicosmetics.trail.nautilus
 stars: 1
 command: /trail <player> nautilus
 operator: console

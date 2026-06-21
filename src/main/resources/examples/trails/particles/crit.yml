@@ -1,6 +1,6 @@
 name: crit
 enabled: true
-permission: omniosmetics.trail.crit
+permission: omnicosmetics.trail.crit
 stars: 1
 command: /trail <player> crit
 operator: console

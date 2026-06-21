@@ -1,6 +1,6 @@
 name: glow
 enabled: true
-permission: omniosmetics.trail.glow
+permission: omnicosmetics.trail.glow
 stars: 1
 command: /trail <player> glow
 operator: console

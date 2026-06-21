@@ -1,10 +1,10 @@
-﻿name: iron
+name: iron
 enabled: true
 blocks:
   IRON_BLOCK:
     chance: 0.6
 radius: 1
-permission: omniosmetics.trail.iron
+permission: omnicosmetics.trail.iron
 stars: 1
 command: /trail <player> iron
 operator: console

@@ -1,6 +1,6 @@
 name: soul
 enabled: true
-permission: omniosmetics.trail.soul
+permission: omnicosmetics.trail.soul
 stars: 1
 command: /trail <player> soul
 operator: console

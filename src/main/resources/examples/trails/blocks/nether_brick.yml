@@ -1,4 +1,4 @@
-﻿name: nether_brick
+name: nether_brick
 enabled: true
 blocks:
   NETHER_BRICK:
@@ -6,7 +6,7 @@ blocks:
   RED_NETHER_BRICKS:
     chance: 0.3
 radius: 0
-permission: omniosmetics.trail.nether_brick
+permission: omnicosmetics.trail.nether_brick
 stars: 1
 command: /trail <player> nether_brick
 operator: console

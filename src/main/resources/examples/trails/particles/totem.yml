@@ -1,6 +1,6 @@
 name: totem
 enabled: true
-permission: omniosmetics.trail.totem
+permission: omnicosmetics.trail.totem
 stars: 1
 command: /trail <player> totem
 operator: console
