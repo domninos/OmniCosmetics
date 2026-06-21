@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.type.Slab;
 import org.bukkit.block.data.type.Stairs;
@@ -19,7 +20,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class BlockTrailManager {
 
     private static final int MAX_CASCADE = 5;
-    private static final int MAX_FALL = 2;
     private static final long CLEANUP_MS = 2000L;
     private static final long TASK_INTERVAL = 5L;
 
@@ -40,13 +40,17 @@ public class BlockTrailManager {
     public void reloadBlacklist() {
         Set<String> names = plugin.getConfigUtil().getBlockBlacklist();
         Set<Material> mats = new HashSet<>();
+
         for (String name : names) {
             try {
                 mats.add(Material.valueOf(name.toUpperCase()));
             } catch (IllegalArgumentException ignored) {
             }
         }
+
         this.blacklist = mats.isEmpty() ? Set.of() : Collections.unmodifiableSet(mats);
+
+        mats.clear();
     }
 
     public void restart() {
@@ -60,6 +64,7 @@ public class BlockTrailManager {
             Bukkit.getScheduler().cancelTask(generatorTaskId);
             generatorTaskId = -1;
         }
+
         if (cleanupTaskId != -1) {
             Bukkit.getScheduler().cancelTask(cleanupTaskId);
             cleanupTaskId = -1;
@@ -73,14 +78,20 @@ public class BlockTrailManager {
 
     private void generate() {
         for (CosmeticsPlayer cp : plugin.getPlayerManager().getPlayers().values()) {
-            if (cp == null) continue;
+            if (cp == null)
+                continue;
 
             Player target = cp.getPlayer();
 
-            BlockTrail trail = cp.getActiveBlockTrail();
-            if (trail == null || !trail.isEnabled()) continue;
+            if (target == null)
+                continue;
 
-            if (!target.isOnGround()) continue;
+            BlockTrail trail = cp.getActiveBlockTrail();
+            if (trail == null || !trail.isEnabled())
+                continue;
+
+            if (!target.isOnGround())
+                continue;
 
             UUID uuid = target.getUniqueId();
             int bx = target.getLocation().getBlockX();
@@ -133,13 +144,8 @@ public class BlockTrailManager {
 
             if (now >= entry.getValue()) {
                 BlockKey bk = entry.getKey();
-                World world = Bukkit.getWorld(bk.worldName());
 
-                if (world != null) {
-                    Location loc = new Location(world, bk.x(), bk.y(), bk.z());
-                    sendBlockChangeToAll(loc, world.getBlockAt(bk.x(), bk.y(), bk.z()).getBlockData());
-                }
-
+                sendBlockChangeToAll(bk.location(), bk.location().getBlock().getBlockData());
                 it.remove();
             }
         }
@@ -188,6 +194,7 @@ public class BlockTrailManager {
 
         double r = Math.random() * total;
 
+        // randomized block trail for benchmark
         for (BlockConfig bc : configs) {
             r -= bc.chance();
 
@@ -197,14 +204,6 @@ public class BlockTrailManager {
                 break;
             }
         }
-    }
-
-    public void placeBenchmarkBlock(UUID playerId, BlockConfig bc, Location loc) {
-        BlockKey key = BlockKey.fromLocation(playerId, loc);
-        if (placedBlocks.containsKey(key))
-            return;
-        placedBlocks.put(key, System.currentTimeMillis() + CLEANUP_MS);
-        sendBlockChangeToAll(loc, bc.material().createBlockData());
     }
 
     private void placeLayer(UUID uuid, BlockTrail trail, Location center) {
@@ -222,12 +221,17 @@ public class BlockTrailManager {
         World world = loc.getWorld();
 
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (!player.getWorld().equals(world)) continue;
-            if (player.getLocation().distanceSquared(loc) > renderDistanceSq) continue;
+            if (!player.getWorld().equals(world))
+                continue;
+
+            if (player.getLocation().distanceSquared(loc) > renderDistanceSq)
+                continue;
+
             player.sendBlockChange(loc, data);
         }
     }
 
+    // TODO hook wg
     private boolean isWorldGuardProtected(Location location) {
         if (!worldGuardChecked) {
             try {
@@ -258,8 +262,22 @@ public class BlockTrailManager {
         }
     }
 
+    public void placeBenchmarkBlock(UUID playerId, BlockConfig bc, Location loc) {
+        BlockKey key = BlockKey.fromLocation(playerId, loc);
+
+        if (placedBlocks.containsKey(key))
+            return;
+
+        placedBlocks.put(key, System.currentTimeMillis() + CLEANUP_MS);
+        sendBlockChangeToAll(loc, bc.material().createBlockData());
+    }
+
     public boolean isFakeBlock(BlockKey key) {
         return placedBlocks.containsKey(key);
+    }
+
+    public boolean isFakeBlock(Block block) {
+        return placedBlocks.keySet().stream().anyMatch(key -> key.x() == block.getX() && key.y() == block.getY() && key.z() == block.getZ());
     }
 
     public void handleQuit(UUID playerId) {
@@ -267,12 +285,44 @@ public class BlockTrailManager {
         lastPositions.remove(playerId);
     }
 
-    public record BlockKey(UUID playerId, String worldName, int x, int y, int z) {
-        public static BlockKey fromLocation(UUID playerId, Location loc) {
-            return new BlockKey(playerId, loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-        }
+    public boolean hasEnabled(Player player) {
+        return placedBlocks.keySet().stream().anyMatch(bk -> bk.playerId().equals(player.getUniqueId()));
     }
 
     private record BlockPos(int x, int z) {
+    }
+
+    public static class BlockKey {
+        private final UUID uuid;
+        private final Location location;
+
+        public BlockKey(UUID playerId, Location location) {
+            this.uuid = playerId;
+            this.location = location;
+        }
+
+        public static BlockKey fromLocation(UUID playerId, Location location) {
+            return new BlockKey(playerId, location);
+        }
+
+        public int x() {
+            return location.getBlockX();
+        }
+
+        public int y() {
+            return location.getBlockY();
+        }
+
+        public int z() {
+            return location.getBlockZ();
+        }
+
+        public Location location() {
+            return location;
+        }
+
+        public UUID playerId() {
+            return uuid;
+        }
     }
 }
