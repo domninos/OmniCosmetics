@@ -153,7 +153,6 @@ public class GUIListener implements Listener {
             }
         }
 
-        plugin.getDatabaseManager().savePlayer(cp);
         player.closeInventory();
         plugin.sendMessage(player, Messages.COSMETIC_EQUIPPED.replace("name", selected.getName()));
     }

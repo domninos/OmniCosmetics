@@ -49,7 +49,6 @@ public class TrailCommand implements CommandExecutor, TabCompleter {
         if (args.length < 2 || args[1].equalsIgnoreCase("remove") || args[1].equalsIgnoreCase("none")) {
             cp.setActiveParticleTrail(null);
             cp.setActiveBlockTrail(null);
-            plugin.getDatabaseManager().savePlayer(cp);
             plugin.sendMessage(sender, Messages.TRAIL_REMOVED.replace("player", target.getName()));
             return true;
         }
@@ -69,7 +68,6 @@ public class TrailCommand implements CommandExecutor, TabCompleter {
             cp.setActiveParticleTrail(null);
         }
 
-        plugin.getDatabaseManager().savePlayer(cp);
         plugin.sendMessage(sender, Messages.TRAIL_SET.replace("player", target.getName(), "name", cosmetic.getName()));
         return true;
     }
