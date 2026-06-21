@@ -24,6 +24,8 @@ public class ParticleConfig {
     private final float roll;
     private final int delay;
 
+    private final Object data;
+
     public ParticleConfig(Particle particle, int count, double offsetX, double offsetY, double offsetZ, double speed, Color color, float size, Color fromColor, Color toColor, Material material, Material blockMaterial, float roll, int delay) {
         this.particle = particle;
         this.count = count;
@@ -39,6 +41,53 @@ public class ParticleConfig {
         this.blockMaterial = blockMaterial;
         this.roll = roll;
         this.delay = delay;
+
+        this.data = buildData();
+    }
+
+    private Object buildData() {
+        if (particle == Particle.DUST)
+            return new Particle.DustOptions(Objects.requireNonNullElse(color, Color.RED), size);
+
+        if (particle == Particle.DUST_COLOR_TRANSITION) {
+            if (fromColor != null && toColor != null)
+                return new Particle.DustTransition(fromColor, toColor, size);
+
+            return null;
+        }
+
+        if (particle == Particle.ITEM) {
+            if (material != null)
+                return new ItemStack(material);
+
+            return null;
+        }
+
+        if (particle == Particle.BLOCK || particle == Particle.FALLING_DUST || particle == Particle.BLOCK_MARKER) {
+            Material mat = blockMaterial != null ? blockMaterial : material;
+
+            if (mat != null && mat.isBlock())
+                return mat.createBlockData();
+
+            return null;
+        }
+
+        if (particle == Particle.SCULK_CHARGE)
+            return roll;
+
+        if (particle == Particle.SHRIEK)
+            return delay;
+
+        if (particle == Particle.DRAGON_BREATH)
+            return 0.0f;
+
+        if (particle == Particle.INSTANT_EFFECT || particle.name().equals("EFFECT"))
+            return new Particle.Spell(color != null ? color : Color.WHITE, 1.0f);
+
+        if (particle == Particle.ENTITY_EFFECT)
+            return color != null ? color : Color.WHITE;
+
+        return null;
     }
 
     public static ParticleConfig fromSection(ConfigurationSection section) {
@@ -109,48 +158,6 @@ public class ParticleConfig {
     }
 
     public void spawn(World world, double x, double y, double z) {
-        Object data = buildData();
         world.spawnParticle(particle, x, y, z, count, offsetX, offsetY, offsetZ, speed, data);
-    }
-
-    private Object buildData() {
-        if (particle == Particle.DUST)
-            return new Particle.DustOptions(Objects.requireNonNullElse(color, Color.RED), size);
-
-        if (particle == Particle.DUST_COLOR_TRANSITION) {
-            if (fromColor != null && toColor != null)
-                return new Particle.DustTransition(fromColor, toColor, size);
-
-            return null;
-        }
-        if (particle == Particle.ITEM) {
-            if (material != null)
-                return new ItemStack(material);
-
-            return null;
-        }
-        if (particle == Particle.BLOCK || particle == Particle.FALLING_DUST || particle == Particle.BLOCK_MARKER) {
-            Material mat = blockMaterial != null ? blockMaterial : material;
-            if (mat != null && mat.isBlock())
-                return mat.createBlockData();
-
-            return null;
-        }
-        if (particle.name().equals("SCULK_CHARGE"))
-            return roll;
-
-        if (particle.name().equals("SHRIEK"))
-            return delay;
-
-        if (particle == Particle.DRAGON_BREATH)
-            return 0.0f;
-
-        if (particle == Particle.INSTANT_EFFECT || particle.name().equals("EFFECT"))
-            return new Particle.Spell(color != null ? color : Color.WHITE, 1.0f);
-
-        if (particle == Particle.ENTITY_EFFECT)
-            return color != null ? color : Color.WHITE;
-
-        return null;
     }
 }
