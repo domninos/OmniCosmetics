@@ -1,0 +1,16 @@
+no_perms: <red>You do not have permission to use this command.</red>
+only_players: <red>Only players can use this command.</red>
+
+usage: '<red>Invalid arguments. Usage: %usage%</red>'
+unknown_cmd: <red>Unknown command.</red>
+reloaded: <green>Successfully reloaded configs and cosmetics.</green>
+
+trail_not_found: <red>Trail '%name%' not found.</red>
+trail_set: <green>Set %player%'s trail to %name%.</green>
+trail_removed: <green>Removed %player%'s trail.</green>
+
+cosmetic_equipped: <green>Equipped %name%.</green>
+cosmetic_removed: <green>Removed %name%.</green>
+
+player_not_found: <red>Player '%name%' not found.</red>
+no_cosmetics: <red>You don't have any cosmetics in this category.</red>
