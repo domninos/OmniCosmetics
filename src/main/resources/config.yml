@@ -4,7 +4,7 @@
 trail-interval: 5
 
 # Maximum distance (in blocks) for trail particles to be visible to other players
-trail-render-distance: 32
+trail-render-distance: 64
 
 # Whether particle trails are enabled
 particle-trails-enabled: true
