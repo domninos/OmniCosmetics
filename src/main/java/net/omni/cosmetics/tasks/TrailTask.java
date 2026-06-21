@@ -9,9 +9,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-import java.util.Collection;
-import java.util.List;
-
 public class TrailTask implements Runnable {
 
     private final OmniCosmetics plugin;
@@ -41,33 +38,32 @@ public class TrailTask implements Runnable {
     @Override
     public void run() {
         ConfigUtil config = plugin.getConfigUtil();
-        int renderDistance = config.getTrailRenderDistance();
-        int renderDistanceSq = renderDistance * renderDistance;
 
-        Collection<? extends Player> onlinePlayers = Bukkit.getOnlinePlayers();
+        if (!config.isParticleTrailsEnabled()) {
+            stop();
+            return;
+        }
 
-        for (Player target : onlinePlayers) {
-            CosmeticsPlayer cp = plugin.getPlayerManager().getPlayer(target.getUniqueId());
-            if (cp == null) continue;
-
-            if (!config.isParticleTrailsEnabled()) continue;
+        for (CosmeticsPlayer cp : plugin.getPlayerManager().getPlayers().values()) {
+            if (cp == null)
+                continue;
 
             ParticleTrail particleTrail = cp.getActiveParticleTrail();
-            if (particleTrail == null || !particleTrail.isEnabled()) continue;
+            if (particleTrail == null || !particleTrail.isEnabled())
+                continue;
+
+            Player target = cp.getPlayer();
+
+            if (target == null)
+                continue;
 
             Location targetLoc = target.getLocation();
-            List<ParticleConfig> configs = particleTrail.getParticleConfigs();
             double px = targetLoc.getX();
             double py = targetLoc.getY() + 1.0;
             double pz = targetLoc.getZ();
 
-            for (Player viewer : onlinePlayers) {
-                if (!viewer.getWorld().equals(targetLoc.getWorld())) continue;
-                if (viewer.getLocation().distanceSquared(targetLoc) > renderDistanceSq) continue;
-
-                for (ParticleConfig pc : configs)
-                    pc.spawn(viewer.getWorld(), px, py, pz);
-            }
+            for (ParticleConfig pc : particleTrail.getParticleConfigs())
+                pc.spawn(target.getWorld(), px, py, pz);
         }
 
         plugin.getBenchmarkManager().tick();
