@@ -3,11 +3,6 @@ package net.omni.cosmetics.managers;
 import net.omni.cosmetics.OmniCosmetics;
 import net.omni.cosmetics.effect.Cosmetic;
 import net.omni.cosmetics.effect.CosmeticCategory;
-import net.omni.cosmetics.effect.chat.CosmeticsChatColor;
-import net.omni.cosmetics.effect.chat.CosmeticsPin;
-import net.omni.cosmetics.effect.chat.CosmeticsTag;
-import net.omni.cosmetics.effect.trails.BlockTrail;
-import net.omni.cosmetics.effect.trails.ParticleTrail;
 import net.omni.cosmetics.player.CosmeticsPlayer;
 import net.omni.cosmetics.util.ChatRenderer;
 import net.omni.cosmetics.util.config.ConfigUtil;
@@ -19,13 +14,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public class GUIManager {
 
@@ -36,7 +25,8 @@ public class GUIManager {
     };
 
     private final OmniCosmetics plugin;
-    final Map<UUID, CosmeticCategory> openCategories = new HashMap<>();
+
+    private final Map<UUID, CosmeticCategory> openCategories = new HashMap<>();
     private final Set<UUID> openGuis = new HashSet<>();
     private final Map<UUID, Integer> currentPages = new HashMap<>();
 
@@ -44,17 +34,14 @@ public class GUIManager {
         this.plugin = plugin;
     }
 
-    public CosmeticCategory getOpenCategory(Player player) {
-        return openCategories.get(player.getUniqueId());
+    public void flush() {
+        openCategories.clear();
+        openGuis.clear();
+        currentPages.clear();
     }
 
-    public void setOpenCategory(Player player, CosmeticCategory category) {
-        if (category == null) {
-            openCategories.remove(player.getUniqueId());
-            currentPages.remove(player.getUniqueId());
-        } else {
-            openCategories.put(player.getUniqueId(), category);
-        }
+    public CosmeticCategory getOpenCategory(Player player) {
+        return openCategories.get(player.getUniqueId());
     }
 
     public boolean isInGui(Player player) {
@@ -69,17 +56,11 @@ public class GUIManager {
         return currentPages.getOrDefault(player.getUniqueId(), 0);
     }
 
-    public void setCurrentPage(Player player, int page) {
-        if (page < 0) page = 0;
-        currentPages.put(player.getUniqueId(), page);
-    }
-
     public void openMenu(Player player) {
         setOpenCategory(player, null);
         ConfigUtil config = plugin.getConfigUtil();
-        ChatRenderer renderer = MessageUtil.getRenderer();
 
-        Inventory inv = renderer.createInventory(null, config.getGuiMainMenuSize(), config.getGuiMainMenuTitle());
+        Inventory inv = MessageUtil.getRenderer().createInventory(null, config.getGuiMainMenuSize(), config.getGuiMainMenuTitle());
         fillBorder(inv);
 
         ConfigUtil.GuiButton exit = config.getGuiMainMenuExit();
@@ -93,6 +74,56 @@ public class GUIManager {
         openGuis.add(player.getUniqueId());
     }
 
+    public void setOpenCategory(Player player, CosmeticCategory category) {
+        if (category == null) {
+            openCategories.remove(player.getUniqueId());
+            currentPages.remove(player.getUniqueId());
+        } else {
+            openCategories.put(player.getUniqueId(), category);
+        }
+    }
+
+    private void fillBorder(Inventory inv) {
+        ConfigUtil config = plugin.getConfigUtil();
+        ConfigUtil.GuiButton filler = config.getGuiFiller();
+        ItemStack fillerItem = createGuiItem(filler.material(), filler.name(), filler.lore());
+
+        int rows = inv.getSize() / 9;
+
+        for (int slot = 0; slot < inv.getSize(); slot++) {
+            if (slot == config.getGuiMainMenuExit().slot()
+                    || slot == config.getGuiCategoryBack().slot()
+                    || slot == config.getGuiCategoryPrevious().slot()
+                    || slot == config.getGuiCategoryNext().slot()
+            )
+                continue;
+
+            if (isBorderSlot(slot, rows))
+                inv.setItem(slot, fillerItem);
+        }
+    }
+
+    // TODO cache Cosmetic ItemStack to Cosmetic
+    private ItemStack createGuiItem(Material material, String name, List<String> lore) {
+        ChatRenderer renderer = MessageUtil.getRenderer();
+        ItemStack item = new ItemStack(material);
+        ItemMeta meta = item.getItemMeta();
+        renderer.setDisplayName(meta, name);
+        renderer.setLore(meta, lore);
+        item.setItemMeta(meta);
+        return item;
+    }
+
+    private ItemStack createCategoryItem(Material material, String name, List<String> lore) {
+        return createGuiItem(material, name, lore);
+    }
+
+    private boolean isBorderSlot(int slot, int rows) {
+        int row = slot / 9;
+        int col = slot % 9;
+        return row == 0 || row == rows - 1 || col == 0 || col == 8;
+    }
+
     public void openCategory(Player player, CosmeticCategory category) {
         openCategory(player, category, 0);
     }
@@ -101,6 +132,7 @@ public class GUIManager {
         List<? extends Cosmetic> cosmetics = getFiltered(category, player);
 
         if (cosmetics.isEmpty()) {
+            player.closeInventory();
             plugin.sendMessage(player, Messages.NO_COSMETICS.toString());
             return;
         }
@@ -110,8 +142,12 @@ public class GUIManager {
 
         boolean paginate = cosmetics.size() > config.getPaginationThreshold();
         int totalPages = paginate ? Math.max(1, (int) Math.ceil((double) cosmetics.size() / CONTENT_SLOTS.length)) : 1;
-        if (page >= totalPages) page = totalPages - 1;
-        if (page < 0) page = 0;
+
+        if (page >= totalPages)
+            page = totalPages - 1;
+
+        if (page < 0)
+            page = 0;
 
         setOpenCategory(player, category);
         setCurrentPage(player, page);
@@ -134,23 +170,29 @@ public class GUIManager {
 
         for (int i = start; i < end; i++) {
             Cosmetic cosmetic = cosmetics.get(i);
+
             Material mat;
             try {
                 mat = Material.valueOf(getItemType(cosmetic));
             } catch (IllegalArgumentException e) {
                 mat = Material.BARRIER;
             }
+
+            // TODO store itemstack in Cosmetic
             ItemStack item = new ItemStack(mat);
             ItemMeta meta = item.getItemMeta();
             renderer.setDisplayName(meta, cosmetic.getItemName());
             List<String> lore = new ArrayList<>(cosmetic.getItemLore());
             lore.add("");
-            if (isEquipped(cp, cosmetic)) {
+
+            if (isEquipped(cp, cosmetic))
                 lore.add("<green>\u2713 Equipped</green>");
-            }
+
             renderer.setLore(meta, lore);
             item.setItemMeta(meta);
             inv.setItem(CONTENT_SLOTS[i - start], item);
+
+            lore.clear(); // garbage
         }
 
         for (int i = end - start; i < CONTENT_SLOTS.length; i++) {
@@ -163,89 +205,20 @@ public class GUIManager {
             boolean isLast = page >= totalPages - 1;
 
             ConfigUtil.NavButton prevCfg = config.getGuiCategoryPrevious();
-            if (isFirst) {
+            if (isFirst)
                 inv.setItem(prevCfg.slot(), createGuiItem(prevCfg.disabledMaterial(), prevCfg.disabledName(), prevCfg.disabledLore()));
-            } else {
+            else
                 inv.setItem(prevCfg.slot(), createGuiItem(prevCfg.material(), prevCfg.name(), prevCfg.lore()));
-            }
 
             ConfigUtil.NavButton nextCfg = config.getGuiCategoryNext();
-            if (isLast) {
+            if (isLast)
                 inv.setItem(nextCfg.slot(), createGuiItem(nextCfg.disabledMaterial(), nextCfg.disabledName(), nextCfg.disabledLore()));
-            } else {
+            else
                 inv.setItem(nextCfg.slot(), createGuiItem(nextCfg.material(), nextCfg.name(), nextCfg.lore()));
-            }
         }
 
         player.openInventory(inv);
         openGuis.add(player.getUniqueId());
-    }
-
-    private void fillBorder(Inventory inv) {
-        ConfigUtil config = plugin.getConfigUtil();
-        ConfigUtil.GuiButton filler = config.getGuiFiller();
-        ItemStack fillerItem = createGuiItem(filler.material(), filler.name(), filler.lore());
-
-        Set<Integer> skip = new HashSet<>();
-        skip.add(config.getGuiMainMenuExit().slot());
-        skip.add(config.getGuiCategoryBack().slot());
-        skip.add(config.getGuiCategoryPrevious().slot());
-        skip.add(config.getGuiCategoryNext().slot());
-
-        int rows = inv.getSize() / 9;
-        for (int slot = 0; slot < inv.getSize(); slot++) {
-            if (skip.contains(slot)) continue;
-            if (isBorderSlot(slot, rows)) {
-                inv.setItem(slot, fillerItem);
-            }
-        }
-    }
-
-    private boolean isBorderSlot(int slot, int rows) {
-        int row = slot / 9;
-        int col = slot % 9;
-        return row == 0 || row == rows - 1 || col == 0 || col == 8;
-    }
-
-    private ItemStack createGuiItem(Material material, String name, List<String> lore) {
-        ChatRenderer renderer = MessageUtil.getRenderer();
-        ItemStack item = new ItemStack(material);
-        ItemMeta meta = item.getItemMeta();
-        renderer.setDisplayName(meta, name);
-        renderer.setLore(meta, lore);
-        item.setItemMeta(meta);
-        return item;
-    }
-
-    private String categoryLabel(CosmeticCategory category) {
-        return switch (category) {
-            case PARTICLE_TRAIL -> "Particle Trails";
-            case BLOCK_TRAIL -> "Block Trails";
-            case TAG -> "Tags";
-            case PIN -> "Pins";
-            case CHAT_COLOR -> "Chat Colors";
-        };
-    }
-
-    private ItemStack createCategoryItem(Material material, String name, List<String> lore) {
-        return createGuiItem(material, name, lore);
-    }
-
-    private boolean isEquipped(CosmeticsPlayer cp, Cosmetic cosmetic) {
-        if (cp == null) return false;
-        return switch (cosmetic.getCategory()) {
-            case PARTICLE_TRAIL -> cp.getActiveParticleTrail() != null && cp.getActiveParticleTrail().getName().equalsIgnoreCase(cosmetic.getName());
-            case BLOCK_TRAIL -> cp.getActiveBlockTrail() != null && cp.getActiveBlockTrail().getName().equalsIgnoreCase(cosmetic.getName());
-            case TAG -> cp.getActiveTag() != null && cp.getActiveTag().getName().equalsIgnoreCase(cosmetic.getName());
-            case PIN -> cp.getActivePin() != null && cp.getActivePin().getName().equalsIgnoreCase(cosmetic.getName());
-            case CHAT_COLOR -> cp.getActiveChatColor() != null && cp.getActiveChatColor().getName().equalsIgnoreCase(cosmetic.getName());
-        };
-    }
-
-    private String getItemType(Cosmetic cosmetic) {
-        String type = cosmetic.getItemType();
-        if (type != null) return type;
-        return "BARRIER";
     }
 
     public List<? extends Cosmetic> getFiltered(CosmeticCategory category, Player player) {
@@ -266,6 +239,41 @@ public class GUIManager {
             case CHAT_COLOR -> cm.getChatColors().stream()
                     .filter(c -> player.hasPermission(c.getPermission()))
                     .toList();
+        };
+    }
+
+    public void setCurrentPage(Player player, int page) {
+        if (page < 0) page = 0;
+        currentPages.put(player.getUniqueId(), page);
+    }
+
+    private String categoryLabel(CosmeticCategory category) {
+        return switch (category) {
+            case PARTICLE_TRAIL -> "Particle Trails";
+            case BLOCK_TRAIL -> "Block Trails";
+            case TAG -> "Tags";
+            case PIN -> "Pins";
+            case CHAT_COLOR -> "Chat Colors";
+        };
+    }
+
+    private String getItemType(Cosmetic cosmetic) {
+        String type = cosmetic.getItemType();
+        if (type != null) return type;
+        return "BARRIER";
+    }
+
+    private boolean isEquipped(CosmeticsPlayer cp, Cosmetic cosmetic) {
+        if (cp == null) return false;
+        return switch (cosmetic.getCategory()) {
+            case PARTICLE_TRAIL ->
+                    cp.getActiveParticleTrail() != null && cp.getActiveParticleTrail().getName().equalsIgnoreCase(cosmetic.getName());
+            case BLOCK_TRAIL ->
+                    cp.getActiveBlockTrail() != null && cp.getActiveBlockTrail().getName().equalsIgnoreCase(cosmetic.getName());
+            case TAG -> cp.getActiveTag() != null && cp.getActiveTag().getName().equalsIgnoreCase(cosmetic.getName());
+            case PIN -> cp.getActivePin() != null && cp.getActivePin().getName().equalsIgnoreCase(cosmetic.getName());
+            case CHAT_COLOR ->
+                    cp.getActiveChatColor() != null && cp.getActiveChatColor().getName().equalsIgnoreCase(cosmetic.getName());
         };
     }
 }
