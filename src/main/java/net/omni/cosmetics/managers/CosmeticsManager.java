@@ -115,22 +115,19 @@ public class CosmeticsManager {
         saveExample("chatcolors/red.yml");
     }
 
-    private boolean saveExample(String path) {
+    private void saveExample(String path) {
         File file = new File(plugin.getDataFolder(), path);
 
         if (file.exists())
-            return false;
+            return;
 
         try (InputStream in = plugin.getResource("examples/" + path)) {
             if (in != null) {
                 Files.copy(in, file.toPath());
-                return true;
             }
         } catch (IOException e) {
             plugin.getLogger().log(Level.WARNING, "Could not save example: " + path, e);
         }
-
-        return false;
     }
 
     public void reloadCosmetics() {
@@ -159,7 +156,10 @@ public class CosmeticsManager {
 
     private void loadParticleTrails() {
         File[] files = particleDir.listFiles((dir, name) -> name.endsWith(".yml"));
-        if (files == null) return;
+
+        if (files == null)
+            return;
+
         for (File file : files) {
             try {
                 YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
@@ -168,21 +168,31 @@ public class CosmeticsManager {
 
                 List<ParticleConfig> configs = new ArrayList<>();
                 ConfigurationSection particles = config.getConfigurationSection("particles");
+
                 if (particles != null) {
                     for (String key : particles.getKeys(false)) {
                         ConfigurationSection section = particles.getConfigurationSection(key);
-                        if (section == null) continue;
+
+                        if (section == null)
+                            continue;
+
                         ParticleConfig pc = ParticleConfig.fromSection(section);
-                        if (pc != null) configs.add(pc);
-                        else plugin.getLogger().warning("Invalid particle entry '" + key + "' in " + file.getName());
+
+                        if (pc != null)
+                            configs.add(pc);
+                        else
+                            plugin.getLogger().warning("Invalid particle entry '" + key + "' in " + file.getName());
                     }
                 }
+
                 if (configs.isEmpty()) {
                     String particleName = config.getString("particle_type");
+
                     if (particleName == null) {
                         plugin.getLogger().warning("Missing particles or particle_type in " + file.getName());
                         continue;
                     }
+
                     try {
                         Particle particle = Particle.valueOf(particleName.toUpperCase());
                         configs.add(new ParticleConfig(particle, 1, 0.3, 0.3, 0.3, 0.0, null, 1.0f, null, null, null, null, 0f, 0));
@@ -197,7 +207,7 @@ public class CosmeticsManager {
                     continue;
                 }
 
-                String permission = config.getString("permission", "omniosmetics.trail." + name);
+                String permission = config.getString("permission", "omnicosmetics.trail." + name);
                 int stars = config.getInt("stars", 1);
                 String command = config.getString("command", "");
                 String operatorStr = config.getString("operator", "console");
@@ -211,6 +221,7 @@ public class CosmeticsManager {
                 ParticleTrail trail = new ParticleTrail(name, enabled, CosmeticCategory.PARTICLE_TRAIL, permission, stars, command, operator, itemName, itemLore, itemType, configs);
                 particleTrails.put(name.toLowerCase(), trail);
                 byName.put(name.toLowerCase(), trail);
+
             } catch (Exception e) {
                 plugin.getLogger().log(Level.WARNING, "Error loading particle trail: " + file.getName(), e);
             }
@@ -231,26 +242,40 @@ public class CosmeticsManager {
                 if (blocks != null) {
                     for (String key : blocks.getKeys(false)) {
                         ConfigurationSection section = blocks.getConfigurationSection(key);
-                        if (section == null) continue;
+
+                        if (section == null)
+                            continue;
+
                         BlockConfig bc = BlockConfig.fromSection(section, file.getName(), plugin.getLogger());
-                        if (bc != null) configs.add(bc);
+
+                        if (bc != null)
+                            configs.add(bc);
                     }
                 }
                 if (configs.isEmpty()) {
                     String typeName = config.getString("type");
+
                     if (typeName == null) {
                         plugin.getLogger().warning("Missing blocks or type in " + file.getName());
                         continue;
                     }
+
                     try {
                         Material material = Material.valueOf(typeName.toUpperCase());
+
                         if (!material.isBlock()) {
                             plugin.getLogger().warning("Legacy type '" + typeName + "' is not a block in " + file.getName());
                             continue;
                         }
+
                         double chance = config.getDouble("chance", 0.5);
-                        if (chance < 0.0) chance = 0.0;
-                        if (chance > 1.0) chance = 1.0;
+
+                        if (chance < 0.0)
+                            chance = 0.0;
+
+                        if (chance > 1.0)
+                            chance = 1.0;
+
                         configs.add(new BlockConfig(material, chance));
                     } catch (IllegalArgumentException e) {
                         plugin.getLogger().warning("Invalid type '" + typeName + "' in " + file.getName());
@@ -264,10 +289,15 @@ public class CosmeticsManager {
                 }
 
                 int radius = config.getInt("radius", 1);
-                if (radius < 0) radius = 0;
+                if (radius < 0)
+                    radius = 0;
 
-                String permission = config.getString("permission", "omniosmetics.trail." + name);
+                String permission = config.getString("permission", "omnicosmetics.trail." + name);
                 int stars = config.getInt("stars", 1);
+
+                if (stars > plugin.getConfigUtil().getMaxStars())
+                    stars = plugin.getConfigUtil().getMaxStars();
+
                 String command = config.getString("command", "");
                 String operatorStr = config.getString("operator", "console");
                 CosmeticOperator operator = operatorStr.equalsIgnoreCase("player") ? CosmeticOperator.PLAYER : CosmeticOperator.CONSOLE;
@@ -280,6 +310,7 @@ public class CosmeticsManager {
                 BlockTrail trail = new BlockTrail(name, enabled, CosmeticCategory.BLOCK_TRAIL, permission, stars, command, operator, itemName, itemLore, itemType, configs, radius);
                 blockTrails.put(name.toLowerCase(), trail);
                 byName.put(name.toLowerCase(), trail);
+
             } catch (Exception e) {
                 plugin.getLogger().log(Level.WARNING, "Error loading block trail: " + file.getName(), e);
             }
@@ -288,14 +319,18 @@ public class CosmeticsManager {
 
     private void loadTags() {
         File[] files = tagDir.listFiles((dir, name) -> name.endsWith(".yml"));
-        if (files == null) return;
+
+        if (files == null)
+            return;
+
         for (File file : files) {
             try {
                 YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+
                 String name = config.getString("name", file.getName().replace(".yml", ""));
                 boolean enabled = config.getBoolean("enabled", true);
                 String tag = config.getString("tag", "[" + name + "]");
-                String permission = config.getString("permission", "omniosmetics.tag." + name);
+                String permission = config.getString("permission", "omnicosmetics.tag." + name);
                 int stars = config.getInt("stars", 1);
                 String command = config.getString("command", "");
                 String operatorStr = config.getString("operator", "console");
@@ -324,7 +359,7 @@ public class CosmeticsManager {
                 String name = config.getString("name", file.getName().replace(".yml", ""));
                 boolean enabled = config.getBoolean("enabled", true);
                 String pin = config.getString("pin", "");
-                String permission = config.getString("permission", "omniosmetics.pin." + name);
+                String permission = config.getString("permission", "omnicosmetics.pin." + name);
                 int stars = config.getInt("stars", 1);
                 String command = config.getString("command", "");
                 String operatorStr = config.getString("operator", "console");
@@ -346,6 +381,7 @@ public class CosmeticsManager {
 
     private void loadChatColors() {
         File[] files = chatColorDir.listFiles((dir, name) -> name.endsWith(".yml"));
+
         if (files == null) return;
         for (File file : files) {
             try {
@@ -353,7 +389,7 @@ public class CosmeticsManager {
                 String name = config.getString("name", file.getName().replace(".yml", ""));
                 boolean enabled = config.getBoolean("enabled", true);
                 String color = config.getString("color", "<white>");
-                String permission = config.getString("permission", "omniosmetics.chatcolor." + name);
+                String permission = config.getString("permission", "omnicosmetics.chatcolor." + name);
                 int stars = config.getInt("stars", 1);
                 String command = config.getString("command", "");
                 String operatorStr = config.getString("operator", "console");
