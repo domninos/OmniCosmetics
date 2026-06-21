@@ -81,9 +81,7 @@ public class BenchmarkManager {
     }
 
     public void stopBenchmark(UUID uuid) {
-        activePlayers.remove(uuid);
-
-        if (activePlayers.isEmpty()) {
+        if (activePlayers.remove(uuid) != null) {
             printFinalReport();
             resetMetrics();
         }
