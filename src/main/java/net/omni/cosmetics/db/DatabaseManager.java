@@ -58,12 +58,6 @@ public class DatabaseManager {
                              "active_chat_color TEXT)")) {
             stmt.execute();
 
-            try (PreparedStatement alter = conn.prepareStatement(
-                    "ALTER TABLE player_cosmetics ADD COLUMN active_block_trail_name TEXT")) {
-                alter.execute();
-            } catch (SQLException ignored) {
-            }
-
             try (PreparedStatement wal = conn.prepareStatement("PRAGMA journal_mode=WAL")) {
                 wal.execute();
             }
@@ -128,6 +122,23 @@ public class DatabaseManager {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> savePlayerSync(player));
     }
 
+    public void savePlayerSync(CosmeticsPlayer player) {
+        String query = "INSERT OR REPLACE INTO player_cosmetics (uuid, active_trail_name, active_block_trail_name, active_tag, active_pin, active_chat_color) VALUES (?, ?, ?, ?, ?, ?)";
+
+        try (Connection connection = getConnection();
+             PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, player.getUUID().toString());
+            stmt.setString(2, player.getActiveParticleTrail() != null ? player.getActiveParticleTrail().getName() : null);
+            stmt.setString(3, player.getActiveBlockTrail() != null ? player.getActiveBlockTrail().getName() : null);
+            stmt.setString(4, player.getActiveTag() != null ? player.getActiveTag().getName() : null);
+            stmt.setString(5, player.getActivePin() != null ? player.getActivePin().getName() : null);
+            stmt.setString(6, player.getActiveChatColor() != null ? player.getActiveChatColor().getName() : null);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.SEVERE, "Error saving player cosmetics to database!", e);
+        }
+    }
+
     public void saveAllSync(Collection<CosmeticsPlayer> players) {
         String query = "INSERT OR REPLACE INTO player_cosmetics (uuid, active_trail_name, active_block_trail_name, active_tag, active_pin, active_chat_color) VALUES (?, ?, ?, ?, ?, ?)";
 
@@ -154,23 +165,6 @@ public class DatabaseManager {
             connection.commit();
         } catch (SQLException e) {
             plugin.getLogger().log(Level.SEVERE, "Error batch saving players!", e);
-        }
-    }
-
-    public void savePlayerSync(CosmeticsPlayer player) {
-        String query = "INSERT OR REPLACE INTO player_cosmetics (uuid, active_trail_name, active_block_trail_name, active_tag, active_pin, active_chat_color) VALUES (?, ?, ?, ?, ?, ?)";
-
-        try (Connection connection = getConnection();
-             PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setString(1, player.getUUID().toString());
-            stmt.setString(2, player.getActiveParticleTrail() != null ? player.getActiveParticleTrail().getName() : null);
-            stmt.setString(3, player.getActiveBlockTrail() != null ? player.getActiveBlockTrail().getName() : null);
-            stmt.setString(4, player.getActiveTag() != null ? player.getActiveTag().getName() : null);
-            stmt.setString(5, player.getActivePin() != null ? player.getActivePin().getName() : null);
-            stmt.setString(6, player.getActiveChatColor() != null ? player.getActiveChatColor().getName() : null);
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            plugin.getLogger().log(Level.SEVERE, "Error saving player cosmetics to database!", e);
         }
     }
 
