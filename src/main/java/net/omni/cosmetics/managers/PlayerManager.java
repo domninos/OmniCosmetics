@@ -28,8 +28,11 @@ public class PlayerManager {
 
     public void unloadPlayer(UUID uuid) {
         CosmeticsPlayer player = players.remove(uuid);
-        if (player != null)
+
+        if (player != null && player.isDirty()) {
             plugin.getDatabaseManager().savePlayer(player);
+            player.markClean();
+        }
     }
 
     public CosmeticsPlayer getPlayer(UUID uuid) {
@@ -37,8 +40,7 @@ public class PlayerManager {
     }
 
     public void saveAll() {
-        for (CosmeticsPlayer player : players.values())
-            plugin.getDatabaseManager().savePlayerSync(player);
+        plugin.getDatabaseManager().saveAllSync(players.values());
     }
 
     public Map<UUID, CosmeticsPlayer> getPlayers() {

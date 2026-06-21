@@ -14,6 +14,8 @@ public class CosmeticsPlayer {
     private final UUID uuid;
     private final Player player;
 
+    private boolean dirty;
+
     private CosmeticsTag activeTag;
     private CosmeticsPin activePin;
     private CosmeticsChatColor activeChatColor;
@@ -26,6 +28,14 @@ public class CosmeticsPlayer {
         this.uuid = player.getUniqueId();
     }
 
+    public boolean isDirty() {
+        return dirty;
+    }
+
+    public void markClean() {
+        this.dirty = false;
+    }
+
     public Player getPlayer() {
         return player;
     }
@@ -36,6 +46,7 @@ public class CosmeticsPlayer {
 
     public void setActiveTag(CosmeticsTag tag) {
         this.activeTag = tag;
+        this.dirty = true;
     }
 
     public CosmeticsPin getActivePin() {
@@ -44,6 +55,7 @@ public class CosmeticsPlayer {
 
     public void setActivePin(CosmeticsPin pin) {
         this.activePin = pin;
+        this.dirty = true;
     }
 
     public CosmeticsChatColor getActiveChatColor() {
@@ -52,6 +64,7 @@ public class CosmeticsPlayer {
 
     public void setActiveChatColor(CosmeticsChatColor chatColor) {
         this.activeChatColor = chatColor;
+        this.dirty = true;
     }
 
     public BlockTrail getActiveBlockTrail() {
@@ -60,6 +73,7 @@ public class CosmeticsPlayer {
 
     public void setActiveBlockTrail(BlockTrail blockTrail) {
         this.activeBlockTrail = blockTrail;
+        this.dirty = true;
     }
 
     public ParticleTrail getActiveParticleTrail() {
@@ -68,6 +82,7 @@ public class CosmeticsPlayer {
 
     public void setActiveParticleTrail(ParticleTrail particleTrail) {
         this.activeParticleTrail = particleTrail;
+        this.dirty = true;
     }
 
     public UUID getUUID() {

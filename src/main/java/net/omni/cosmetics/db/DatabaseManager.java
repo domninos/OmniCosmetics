@@ -13,6 +13,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 
@@ -51,10 +52,18 @@ public class DatabaseManager {
                      "CREATE TABLE IF NOT EXISTS player_cosmetics (" +
                              "uuid TEXT PRIMARY KEY," +
                              "active_trail_name TEXT," +
+                             "active_block_trail_name TEXT," +
                              "active_tag TEXT," +
                              "active_pin TEXT," +
                              "active_chat_color TEXT)")) {
             stmt.execute();
+
+            try (PreparedStatement alter = conn.prepareStatement(
+                    "ALTER TABLE player_cosmetics ADD COLUMN active_block_trail_name TEXT")) {
+                alter.execute();
+            } catch (SQLException ignored) {
+            }
+
             try (PreparedStatement wal = conn.prepareStatement("PRAGMA journal_mode=WAL")) {
                 wal.execute();
             }
@@ -75,7 +84,7 @@ public class DatabaseManager {
         CompletableFuture<CosmeticsPlayer> future = new CompletableFuture<>();
 
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            String query = "SELECT active_trail_name, active_tag, active_pin, active_chat_color FROM player_cosmetics WHERE uuid = ?";
+            String query = "SELECT active_trail_name, active_block_trail_name, active_tag, active_pin, active_chat_color FROM player_cosmetics WHERE uuid = ?";
 
             try (Connection connection = getConnection();
                  PreparedStatement stmt = connection.prepareStatement(query)) {
@@ -86,14 +95,15 @@ public class DatabaseManager {
                 try (ResultSet rs = stmt.executeQuery()) {
                     if (rs.next()) {
                         String trailName = rs.getString("active_trail_name");
+                        String blockTrailName = rs.getString("active_block_trail_name");
                         String tagName = rs.getString("active_tag");
                         String pinName = rs.getString("active_pin");
                         String colorName = rs.getString("active_chat_color");
 
-                        if (trailName != null && !trailName.isEmpty()) {
+                        if (trailName != null && !trailName.isEmpty())
                             cosmeticsPlayer.setActiveParticleTrail(plugin.getCosmeticsManager().getParticleTrail(trailName));
-                            cosmeticsPlayer.setActiveBlockTrail(plugin.getCosmeticsManager().getBlockTrail(trailName));
-                        }
+                        if (blockTrailName != null && !blockTrailName.isEmpty())
+                            cosmeticsPlayer.setActiveBlockTrail(plugin.getCosmeticsManager().getBlockTrail(blockTrailName));
                         if (tagName != null && !tagName.isEmpty())
                             cosmeticsPlayer.setActiveTag(plugin.getCosmeticsManager().getTag(tagName));
                         if (pinName != null && !pinName.isEmpty())
@@ -103,6 +113,7 @@ public class DatabaseManager {
                     }
                 }
 
+                cosmeticsPlayer.markClean();
                 future.complete(cosmeticsPlayer);
             } catch (SQLException e) {
                 future.completeExceptionally(e);
@@ -117,23 +128,46 @@ public class DatabaseManager {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> savePlayerSync(player));
     }
 
+    public void saveAllSync(Collection<CosmeticsPlayer> players) {
+        String query = "INSERT OR REPLACE INTO player_cosmetics (uuid, active_trail_name, active_block_trail_name, active_tag, active_pin, active_chat_color) VALUES (?, ?, ?, ?, ?, ?)";
+
+        try (Connection connection = getConnection();
+             PreparedStatement stmt = connection.prepareStatement(query)) {
+            connection.setAutoCommit(false);
+
+            for (CosmeticsPlayer player : players) {
+                if (!player.isDirty())
+                    continue;
+
+                stmt.setString(1, player.getUUID().toString());
+                stmt.setString(2, player.getActiveParticleTrail() != null ? player.getActiveParticleTrail().getName() : null);
+                stmt.setString(3, player.getActiveBlockTrail() != null ? player.getActiveBlockTrail().getName() : null);
+                stmt.setString(4, player.getActiveTag() != null ? player.getActiveTag().getName() : null);
+                stmt.setString(5, player.getActivePin() != null ? player.getActivePin().getName() : null);
+                stmt.setString(6, player.getActiveChatColor() != null ? player.getActiveChatColor().getName() : null);
+                stmt.addBatch();
+
+                player.markClean();
+            }
+
+            stmt.executeBatch();
+            connection.commit();
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.SEVERE, "Error batch saving players!", e);
+        }
+    }
+
     public void savePlayerSync(CosmeticsPlayer player) {
-        String query = "INSERT OR REPLACE INTO player_cosmetics (uuid, active_trail_name, active_tag, active_pin, active_chat_color) VALUES (?, ?, ?, ?, ?)";
+        String query = "INSERT OR REPLACE INTO player_cosmetics (uuid, active_trail_name, active_block_trail_name, active_tag, active_pin, active_chat_color) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection connection = getConnection();
              PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, player.getUUID().toString());
-
-            String trailName = null;
-            if (player.getActiveParticleTrail() != null)
-                trailName = player.getActiveParticleTrail().getName();
-            else if (player.getActiveBlockTrail() != null)
-                trailName = player.getActiveBlockTrail().getName();
-            stmt.setString(2, trailName);
-
-            stmt.setString(3, player.getActiveTag() != null ? player.getActiveTag().getName() : null);
-            stmt.setString(4, player.getActivePin() != null ? player.getActivePin().getName() : null);
-            stmt.setString(5, player.getActiveChatColor() != null ? player.getActiveChatColor().getName() : null);
+            stmt.setString(2, player.getActiveParticleTrail() != null ? player.getActiveParticleTrail().getName() : null);
+            stmt.setString(3, player.getActiveBlockTrail() != null ? player.getActiveBlockTrail().getName() : null);
+            stmt.setString(4, player.getActiveTag() != null ? player.getActiveTag().getName() : null);
+            stmt.setString(5, player.getActivePin() != null ? player.getActivePin().getName() : null);
+            stmt.setString(6, player.getActiveChatColor() != null ? player.getActiveChatColor().getName() : null);
             stmt.executeUpdate();
         } catch (SQLException e) {
             plugin.getLogger().log(Level.SEVERE, "Error saving player cosmetics to database!", e);
