@@ -5,101 +5,22 @@ import net.omni.cosmetics.effect.CosmeticCategory;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.IntConsumer;
 
 public class ConfigUtil {
 
-    public record MainMenuItem(int slot, Material material, CosmeticCategory category, String name, List<String> lore) {
-        public static MainMenuItem fromSection(ConfigurationSection section) {
-            String catName = section.getString("category");
-            if (catName == null) return null;
-            CosmeticCategory category;
-            try {
-                category = CosmeticCategory.valueOf(catName.toUpperCase());
-            } catch (IllegalArgumentException e) {
-                return null;
-            }
-            int slot = section.getInt("slot");
-            String matName = section.getString("material", "BARRIER");
-            Material material;
-            try {
-                material = Material.valueOf(matName.toUpperCase());
-            } catch (IllegalArgumentException e) {
-                material = Material.BARRIER;
-            }
-            String name = section.getString("name", category.name());
-            List<String> lore = section.getStringList("lore");
-            if (lore == null) lore = List.of();
-            return new MainMenuItem(slot, material, category, name, lore);
-        }
-    }
-
-    public record GuiButton(int slot, Material material, String name, List<String> lore) {
-        public static GuiButton fromSection(ConfigurationSection section, int defaultSlot, String defaultMaterial, String defaultName, List<String> defaultLore) {
-            int slot = section.getInt("slot", defaultSlot);
-            String matName = section.getString("material", defaultMaterial);
-            Material material;
-            try {
-                material = Material.valueOf(matName.toUpperCase());
-            } catch (IllegalArgumentException e) {
-                material = Material.valueOf(defaultMaterial);
-            }
-            String name = section.getString("name", defaultName);
-            List<String> lore = section.getStringList("lore");
-            if (lore == null || lore.isEmpty()) lore = defaultLore;
-            return new GuiButton(slot, material, name, lore);
-        }
-    }
-
-    public record NavButton(int slot, Material material, String name, List<String> lore, Material disabledMaterial, String disabledName, List<String> disabledLore) {
-        public static NavButton fromSection(ConfigurationSection section, int defaultSlot, String defaultMaterial, String defaultName, List<String> defaultLore) {
-            int slot = section.getInt("slot", defaultSlot);
-            String matName = section.getString("material", defaultMaterial);
-            Material material;
-            try {
-                material = Material.valueOf(matName.toUpperCase());
-            } catch (IllegalArgumentException e) {
-                material = Material.valueOf(defaultMaterial);
-            }
-            String name = section.getString("name", defaultName);
-            List<String> lore = section.getStringList("lore");
-            if (lore == null || lore.isEmpty()) lore = defaultLore;
-
-            String disMatName = section.getString("disabled-material", matName);
-            Material disabledMaterial;
-            try {
-                disabledMaterial = Material.valueOf(disMatName.toUpperCase());
-            } catch (IllegalArgumentException e) {
-                disabledMaterial = Material.valueOf(defaultMaterial);
-            }
-            String disabledName = section.getString("disabled-name", "<gray>" + defaultName + "</gray>");
-            List<String> disabledLore = section.getStringList("disabled-lore");
-            if (disabledLore == null) disabledLore = List.of();
-
-            return new NavButton(slot, material, name, lore, disabledMaterial, disabledName, disabledLore);
-        }
-    }
-
     private final OmniCosmetics plugin;
-
     private int trailInterval;
     private int trailRenderDistance;
     private boolean particleTrailsEnabled;
     private boolean blockTrailsEnabled;
     private Set<String> blockBlacklist;
-
     private String guiMainMenuTitle;
     private int guiMainMenuSize;
     private Map<Integer, MainMenuItem> guiMainMenuItems;
     private GuiButton guiMainMenuExit;
-
     private String guiCategoryTitle;
     private int guiCategorySize;
     private GuiButton guiCategoryBack;
@@ -108,6 +29,7 @@ public class ConfigUtil {
     private GuiButton guiFiller;
     private GuiButton guiPlaceholder;
     private int paginationThreshold;
+    private int maxStars;
 
     public ConfigUtil(OmniCosmetics plugin) {
         this.plugin = plugin;
@@ -115,11 +37,14 @@ public class ConfigUtil {
 
     public void reloadConfig() {
         flush();
+        plugin.saveDefaultConfig();
         plugin.reloadConfig();
         load();
     }
 
     public void flush() {
+        blockBlacklist.clear();
+        guiMainMenuItems.clear();
     }
 
     public void load() {
@@ -127,8 +52,10 @@ public class ConfigUtil {
 
         this.trailInterval = getAndDefaultInt("trail-interval", 5, savedDefaults::getAndAdd);
         this.trailRenderDistance = getAndDefaultInt("trail-render-distance", 32, savedDefaults::getAndAdd);
+
         this.particleTrailsEnabled = plugin.getConfig().getBoolean("particle-trails-enabled", true);
         this.blockTrailsEnabled = plugin.getConfig().getBoolean("block-trails-enabled", true);
+
         this.blockBlacklist = new HashSet<>(plugin.getConfig().getStringList("block-trail.blacklisted-blocks"));
 
         loadGuiConfig(savedDefaults);
@@ -139,6 +66,15 @@ public class ConfigUtil {
         }
 
         plugin.sendConsole("<green>Successfully loaded config.yml</green>");
+    }
+
+    private int getAndDefaultInt(String path, int defaultVal, IntConsumer consumer) {
+        if (!plugin.getConfig().contains(path)) {
+            plugin.getConfig().set(path, defaultVal);
+            consumer.accept(1);
+            return defaultVal;
+        }
+        return plugin.getConfig().getInt(path);
     }
 
     private void loadGuiConfig(AtomicInteger savedDefaults) {
@@ -201,6 +137,17 @@ public class ConfigUtil {
 
     private void loadPagination(AtomicInteger savedDefaults) {
         this.paginationThreshold = getAndDefaultInt("gui.pagination.threshold", 21, savedDefaults::getAndAdd);
+        this.maxStars = getAndDefaultInt("gui.max-stars", 3, savedDefaults::getAndAdd);
+    }
+
+    private String getAndDefaultString(String path, String defaultVal, IntConsumer consumer) {
+        String temp = plugin.getConfig().getString(path);
+        if (temp == null) {
+            plugin.getConfig().set(path, defaultVal);
+            consumer.accept(1);
+            return defaultVal;
+        }
+        return temp;
     }
 
     private GuiButton loadGuiButton(String path, int defaultSlot, String defaultMaterial, String defaultName, List<String> defaultLore) {
@@ -209,15 +156,6 @@ public class ConfigUtil {
             return GuiButton.fromSection(section, defaultSlot, defaultMaterial, defaultName, defaultLore);
         }
         return new GuiButton(defaultSlot, Material.valueOf(defaultMaterial), defaultName, defaultLore);
-    }
-
-    private NavButton loadNavButton(String path, int defaultSlot, String defaultMaterial, String defaultName, List<String> defaultLore) {
-        ConfigurationSection section = plugin.getConfig().getConfigurationSection(path);
-        if (section != null) {
-            return NavButton.fromSection(section, defaultSlot, defaultMaterial, defaultName, defaultLore);
-        }
-        return new NavButton(defaultSlot, Material.valueOf(defaultMaterial), defaultName, defaultLore,
-                Material.valueOf(defaultMaterial), "<gray>" + defaultName + "</gray>", List.of());
     }
 
     private Map<Integer, MainMenuItem> defaultMainMenuItems() {
@@ -240,23 +178,13 @@ public class ConfigUtil {
         return items;
     }
 
-    private int getAndDefaultInt(String path, int defaultVal, IntConsumer consumer) {
-        if (!plugin.getConfig().contains(path)) {
-            plugin.getConfig().set(path, defaultVal);
-            consumer.accept(1);
-            return defaultVal;
+    private NavButton loadNavButton(String path, int defaultSlot, String defaultMaterial, String defaultName, List<String> defaultLore) {
+        ConfigurationSection section = plugin.getConfig().getConfigurationSection(path);
+        if (section != null) {
+            return NavButton.fromSection(section, defaultSlot, defaultMaterial, defaultName, defaultLore);
         }
-        return plugin.getConfig().getInt(path);
-    }
-
-    private String getAndDefaultString(String path, String defaultVal, IntConsumer consumer) {
-        String temp = plugin.getConfig().getString(path);
-        if (temp == null) {
-            plugin.getConfig().set(path, defaultVal);
-            consumer.accept(1);
-            return defaultVal;
-        }
-        return temp;
+        return new NavButton(defaultSlot, Material.valueOf(defaultMaterial), defaultName, defaultLore,
+                Material.valueOf(defaultMaterial), "<gray>" + defaultName + "</gray>", List.of());
     }
 
     public int getTrailInterval() {
@@ -328,7 +256,104 @@ public class ConfigUtil {
         return guiCategorySize;
     }
 
+    public int getMaxStars() {
+        return maxStars;
+    }
+
     public Set<String> getBlockBlacklist() {
         return blockBlacklist;
+    }
+
+    public record MainMenuItem(int slot, Material material, CosmeticCategory category, String name, List<String> lore) {
+        public static MainMenuItem fromSection(ConfigurationSection section) {
+            String catName = section.getString("category");
+
+            if (catName == null)
+                return null;
+
+            CosmeticCategory category;
+            try {
+                category = CosmeticCategory.valueOf(catName.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                return null;
+            }
+
+            int slot = section.getInt("slot");
+            String matName = section.getString("material", "BARRIER");
+
+            Material material;
+            try {
+                material = Material.valueOf(matName.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                material = Material.BARRIER;
+            }
+
+            String name = section.getString("name", category.name());
+            List<String> lore = section.getStringList("lore");
+
+            if (lore.isEmpty())
+                lore = List.of();
+
+            return new MainMenuItem(slot, material, category, name, lore);
+        }
+    }
+
+    public record GuiButton(int slot, Material material, String name, List<String> lore) {
+        public static GuiButton fromSection(ConfigurationSection section, int defaultSlot, String defaultMaterial, String defaultName, List<String> defaultLore) {
+            int slot = section.getInt("slot", defaultSlot);
+            String matName = section.getString("material", defaultMaterial);
+
+            Material material;
+            try {
+                material = Material.valueOf(matName.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                material = Material.valueOf(defaultMaterial);
+            }
+
+            String name = section.getString("name", defaultName);
+            List<String> lore = section.getStringList("lore");
+
+            if (lore.isEmpty())
+                lore = defaultLore;
+
+            return new GuiButton(slot, material, name, lore);
+        }
+    }
+
+    public record NavButton(int slot, Material material, String name, List<String> lore, Material disabledMaterial,
+                            String disabledName, List<String> disabledLore) {
+        public static NavButton fromSection(ConfigurationSection section, int defaultSlot, String defaultMaterial, String defaultName, List<String> defaultLore) {
+            int slot = section.getInt("slot", defaultSlot);
+            String matName = section.getString("material", defaultMaterial);
+
+            Material material;
+            try {
+                material = Material.valueOf(matName.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                material = Material.valueOf(defaultMaterial);
+            }
+
+            String name = section.getString("name", defaultName);
+            List<String> lore = section.getStringList("lore");
+
+            if (lore.isEmpty())
+                lore = defaultLore;
+
+            String disMatName = section.getString("disabled-material", matName);
+            Material disabledMaterial;
+            try {
+                disabledMaterial = Material.valueOf(disMatName.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                disabledMaterial = Material.valueOf(defaultMaterial);
+            }
+
+            String disabledName = section.getString("disabled-name", "<gray>" + defaultName + "</gray>");
+            List<String> disabledLore = section.getStringList("disabled-lore");
+
+            if (disabledLore.isEmpty())
+                disabledLore = List.of();
+
+            return new NavButton(slot, material, name, lore, disabledMaterial, disabledName, disabledLore);
+        }
     }
 }

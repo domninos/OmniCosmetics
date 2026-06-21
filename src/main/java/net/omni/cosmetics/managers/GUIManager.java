@@ -181,7 +181,17 @@ public class GUIManager {
             // TODO store itemstack in Cosmetic
             ItemStack item = new ItemStack(mat);
             ItemMeta meta = item.getItemMeta();
-            renderer.setDisplayName(meta, cosmetic.getItemName());
+            String displayName = cosmetic.getItemName();
+            int maxStars = config.getMaxStars();
+            int stars = cosmetic.getStars();
+            if (stars > 0 && maxStars > 0) {
+                int filled = Math.min(stars, maxStars);
+                int empty = maxStars - filled;
+                String suffix = " <gold>" + "★".repeat(filled) + "</gold>"
+                        + (empty > 0 ? "<gray>" + "★".repeat(empty) + "</gray>" : "");
+                displayName += suffix;
+            }
+            renderer.setDisplayName(meta, displayName);
             List<String> lore = new ArrayList<>(cosmetic.getItemLore());
             lore.add("");
 

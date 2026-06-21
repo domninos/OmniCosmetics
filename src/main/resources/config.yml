@@ -141,3 +141,5 @@ gui:
 
   pagination:
     threshold: 21
+
+  max-stars: 3
