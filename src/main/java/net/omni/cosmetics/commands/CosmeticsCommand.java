@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CosmeticsCommand implements CommandExecutor, TabCompleter {
@@ -20,7 +21,7 @@ public class CosmeticsCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
         if (args.length == 0) {
-            if (!(sender instanceof Player)) {
+            if (!(sender instanceof Player player)) {
                 plugin.sendMessage(sender, Messages.ONLY_PLAYERS.toString());
                 return true;
             }
@@ -30,7 +31,7 @@ public class CosmeticsCommand implements CommandExecutor, TabCompleter {
                 return true;
             }
 
-            plugin.getGuiManager().openMenu((Player) sender);
+            plugin.getGuiManager().openMenu(player);
             return true;
         }
 
@@ -50,6 +51,7 @@ public class CosmeticsCommand implements CommandExecutor, TabCompleter {
                 plugin.sendMessage(sender, Messages.NO_PERMS.toString());
                 return true;
             }
+
             if (!(sender instanceof Player player)) {
                 plugin.sendMessage(sender, Messages.ONLY_PLAYERS.toString());
                 return true;
@@ -66,6 +68,7 @@ public class CosmeticsCommand implements CommandExecutor, TabCompleter {
                     } catch (NumberFormatException ignored) {
                     }
                 }
+
                 plugin.getBenchmarkManager().startBenchmark(player, radius);
                 plugin.sendMessage(player, "<gray>Benchmark mode <green>enabled</green> (radius=" + radius + ").</gray>");
             }
@@ -79,11 +82,14 @@ public class CosmeticsCommand implements CommandExecutor, TabCompleter {
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
         if (args.length == 1) {
-            List<String> options = new java.util.ArrayList<>();
+            List<String> options = new ArrayList<>();
+
             if (sender.hasPermission("omnicosmetics.reload"))
                 options.add("reload");
+
             if (sender.hasPermission("omnicosmetics.benchmark"))
                 options.add("benchmark");
+
             return options;
         }
 

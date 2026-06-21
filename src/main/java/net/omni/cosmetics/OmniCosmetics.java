@@ -54,6 +54,7 @@ public final class OmniCosmetics extends JavaPlugin {
 
         databaseManager.closePool();
 
+        configUtil.flush();
         guiManager.flush();
 
         sendConsole("<red>Successfully disabled.</red>");
@@ -137,7 +138,6 @@ public final class OmniCosmetics extends JavaPlugin {
         messagesManager.loadMessages();
         cosmeticsManager.reloadCosmetics();
         benchmarkManager.rebuildPool();
-        playerManager.saveAll();
 
         for (Player online : Bukkit.getOnlinePlayers()) {
             CosmeticsPlayer cp = playerManager.getPlayer(online.getUniqueId());
