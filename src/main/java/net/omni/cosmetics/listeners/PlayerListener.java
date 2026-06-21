@@ -30,6 +30,7 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         UUID uuid = event.getPlayer().getUniqueId();
+
         plugin.getPlayerManager().unloadPlayer(uuid);
         plugin.getBlockTrailManager().handleQuit(uuid);
         plugin.getGuiManager().removeFromGui(uuid);

@@ -45,17 +45,28 @@ public class CosmeticsManager {
 
     public void initDirectories() {
         File trailsDir = new File(plugin.getDataFolder(), "trails");
+
         this.particleDir = new File(trailsDir, "particles");
         this.blockDir = new File(trailsDir, "blocks");
+
         this.tagDir = new File(plugin.getDataFolder(), "tags");
         this.pinDir = new File(plugin.getDataFolder(), "pins");
         this.chatColorDir = new File(plugin.getDataFolder(), "chatcolors");
 
-        particleDir.mkdirs();
-        blockDir.mkdirs();
-        tagDir.mkdirs();
-        pinDir.mkdirs();
-        chatColorDir.mkdirs();
+        if (particleDir.mkdirs())
+            plugin.sendConsole("<green>Successfully created /plugins/OmniCosmetics/trails/particles/</green>");
+
+        if (blockDir.mkdirs())
+            plugin.sendConsole("<green>Successfully created /plugins/OmniCosmetics/trails/blocks</green>");
+
+        if (tagDir.mkdirs())
+            plugin.sendConsole("<green>Successfully created /plugins/OmniCosmetics/tags/</green>");
+
+        if (pinDir.mkdirs())
+            plugin.sendConsole("<green>Successfully created /plugins/OmniCosmetics/pins/</green>");
+
+        if (chatColorDir.mkdirs())
+            plugin.sendConsole("<green>Successfully created /plugins/OmniCosmetics/chatcolors/</green>");
 
         saveExample("trails/particles/fairy.yml");
         saveExample("trails/particles/flame.yml");
@@ -81,6 +92,7 @@ public class CosmeticsManager {
         saveExample("trails/particles/totem.yml");
         saveExample("trails/particles/dust.yml");
         saveExample("trails/particles/sculk.yml");
+
         saveExample("trails/blocks/tnt.yml");
         saveExample("trails/blocks/stone.yml");
         saveExample("trails/blocks/cobblestone.yml");
@@ -97,32 +109,28 @@ public class CosmeticsManager {
         saveExample("trails/blocks/glowstone.yml");
         saveExample("trails/blocks/quartz.yml");
         saveExample("trails/blocks/purpur.yml");
+
         saveExample("tags/vip.yml");
         saveExample("pins/smile.yml");
         saveExample("chatcolors/red.yml");
     }
 
-    private void saveExample(String path) {
+    private boolean saveExample(String path) {
         File file = new File(plugin.getDataFolder(), path);
-        if (file.exists()) return;
-        file.getParentFile().mkdirs();
+
+        if (file.exists())
+            return false;
+
         try (InputStream in = plugin.getResource("examples/" + path)) {
             if (in != null) {
                 Files.copy(in, file.toPath());
-                plugin.sendConsole("<green>Created example: " + path + "</green>");
+                return true;
             }
         } catch (IOException e) {
             plugin.getLogger().log(Level.WARNING, "Could not save example: " + path, e);
         }
-    }
 
-    public void loadCosmetics() {
-        loadParticleTrails();
-        loadBlockTrails();
-        loadTags();
-        loadPins();
-        loadChatColors();
-        plugin.sendConsole("<green>Loaded " + byName.size() + " cosmetics.</green>");
+        return false;
     }
 
     public void reloadCosmetics() {
@@ -138,6 +146,15 @@ public class CosmeticsManager {
         tags.clear();
         pins.clear();
         chatColors.clear();
+    }
+
+    public void loadCosmetics() {
+        loadParticleTrails();
+        loadBlockTrails();
+        loadTags();
+        loadPins();
+        loadChatColors();
+        plugin.sendConsole("<green>Loaded " + byName.size() + " cosmetics.</green>");
     }
 
     private void loadParticleTrails() {

@@ -40,16 +40,21 @@ public final class OmniCosmetics extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        if (benchmarkManager != null) benchmarkManager.stopAll();
-        if (trailTask != null) trailTask.stop();
-        if (blockTrailManager != null) blockTrailManager.stop();
-        if (cosmeticsManager != null) cosmeticsManager.flush();
+        benchmarkManager.stopAll();
+        benchmarkManager.flush();
 
-        if (playerManager != null) playerManager.saveAll();
+        trailTask.stop();
+        blockTrailManager.stop();
+        cosmeticsManager.flush();
 
-        if (messagesManager != null) messagesManager.flush();
+        playerManager.saveAll();
+        playerManager.flush();
 
-        if (databaseManager != null) databaseManager.closePool();
+        messagesManager.flush();
+
+        databaseManager.closePool();
+
+        guiManager.flush();
 
         sendConsole("<red>Successfully disabled.</red>");
     }
@@ -76,7 +81,6 @@ public final class OmniCosmetics extends JavaPlugin {
         this.guiManager = new GUIManager(this);
 
         this.blockTrailManager = new BlockTrailManager(this);
-
         this.playerManager = new PlayerManager(this);
 
         CosmeticsAPI.init(this);
@@ -85,7 +89,6 @@ public final class OmniCosmetics extends JavaPlugin {
         trailTask.start();
 
         this.benchmarkManager = new BenchmarkManager(this);
-
         blockTrailManager.start();
 
         registerHooks();
@@ -111,7 +114,7 @@ public final class OmniCosmetics extends JavaPlugin {
     }
 
     private void registerHooks() {
-
+        // TODO worldguard
     }
 
     private void registerCommands() {
@@ -121,8 +124,8 @@ public final class OmniCosmetics extends JavaPlugin {
 
     private void registerListeners() {
         new PlayerListener(this).register();
-        Bukkit.getPluginManager().registerEvents(new GUIListener(this), this);
-        Bukkit.getPluginManager().registerEvents(new BlockBreakListener(this), this);
+        new GUIListener(this).register();
+        new BlockBreakListener(this).register();
     }
 
     public void sendConsole(String message) {
@@ -136,7 +139,6 @@ public final class OmniCosmetics extends JavaPlugin {
         benchmarkManager.rebuildPool();
         playerManager.saveAll();
 
-        // Re-resolve active cosmetics for online players
         for (Player online : Bukkit.getOnlinePlayers()) {
             CosmeticsPlayer cp = playerManager.getPlayer(online.getUniqueId());
 
@@ -156,7 +158,6 @@ public final class OmniCosmetics extends JavaPlugin {
 
             if (cp.getActiveChatColor() != null)
                 cp.setActiveChatColor(cosmeticsManager.getChatColor(cp.getActiveChatColor().getName()));
-
         }
 
         trailTask.restart();

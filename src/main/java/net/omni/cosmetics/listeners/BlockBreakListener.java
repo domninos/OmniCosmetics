@@ -1,7 +1,7 @@
 package net.omni.cosmetics.listeners;
 
 import net.omni.cosmetics.OmniCosmetics;
-import net.omni.cosmetics.managers.BlockTrailManager;
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -16,10 +16,11 @@ public class BlockBreakListener implements Listener {
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
-        BlockTrailManager.BlockKey key = BlockTrailManager.BlockKey.fromLocation(
-                event.getPlayer().getUniqueId(), event.getBlock().getLocation()
-        );
-        if (plugin.getBlockTrailManager().isFakeBlock(key))
+        if (plugin.getBlockTrailManager().isFakeBlock(event.getBlock()))
             event.setCancelled(true);
+    }
+
+    public void register() {
+        Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 }

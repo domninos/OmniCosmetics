@@ -44,4 +44,8 @@ public class PlayerManager {
     public Map<UUID, CosmeticsPlayer> getPlayers() {
         return players;
     }
+
+    public void flush() {
+        players.clear();
+    }
 }

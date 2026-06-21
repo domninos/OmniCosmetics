@@ -12,6 +12,7 @@ import net.omni.cosmetics.managers.GUIManager;
 import net.omni.cosmetics.player.CosmeticsPlayer;
 import net.omni.cosmetics.util.config.ConfigUtil;
 import net.omni.cosmetics.util.config.Messages;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -30,9 +31,14 @@ public class GUIListener implements Listener {
 
     @EventHandler
     public void onClick(InventoryClickEvent event) {
-        if (!(event.getWhoClicked() instanceof Player player)) return;
-        if (!plugin.getGuiManager().isInGui(player)) return;
-        if (event.getCurrentItem() == null) return;
+        if (!(event.getWhoClicked() instanceof Player player))
+            return;
+
+        if (!plugin.getGuiManager().isInGui(player))
+            return;
+
+        if (event.getCurrentItem() == null)
+            return;
 
         event.setCancelled(true);
         int slot = event.getSlot();
@@ -41,11 +47,10 @@ public class GUIListener implements Listener {
         ConfigUtil config = plugin.getConfigUtil();
         CosmeticCategory category = guiManager.getOpenCategory(player);
 
-        if (category == null) {
+        if (category == null)
             handleMainMenuClick(player, guiManager, config, slot);
-        } else {
+        else
             handleCategoryClick(player, guiManager, config, category, slot);
-        }
     }
 
     private void handleMainMenuClick(Player player, GUIManager guiManager, ConfigUtil config, int slot) {
@@ -55,9 +60,8 @@ public class GUIListener implements Listener {
         }
 
         CosmeticCategory cat = config.getCategoryBySlot(slot);
-        if (cat != null) {
+        if (cat != null)
             guiManager.openCategory(player, cat);
-        }
     }
 
     private void handleCategoryClick(Player player, GUIManager guiManager, ConfigUtil config, CosmeticCategory category, int slot) {
@@ -72,19 +76,22 @@ public class GUIListener implements Listener {
 
         if (slot == prevSlot) {
             int page = guiManager.getCurrentPage(player);
-            if (page > 0) {
+
+            if (page > 0)
                 guiManager.openCategory(player, category, page - 1);
-            }
+
             return;
         }
 
         if (slot == nextSlot) {
             List<? extends Cosmetic> cosmetics = guiManager.getFiltered(category, player);
+
             int totalPages = Math.max(1, (int) Math.ceil((double) cosmetics.size() / GUIManager.CONTENT_SLOTS.length));
             int page = guiManager.getCurrentPage(player);
-            if (page < totalPages - 1) {
+
+            if (page < totalPages - 1)
                 guiManager.openCategory(player, category, page + 1);
-            }
+
             return;
         }
 
@@ -96,17 +103,22 @@ public class GUIListener implements Listener {
             }
         }
 
-        if (contentIndex < 0) return;
+        if (contentIndex < 0)
+            return;
 
         int page = guiManager.getCurrentPage(player);
         List<? extends Cosmetic> cosmetics = guiManager.getFiltered(category, player);
+
         int cosmeticIndex = page * GUIManager.CONTENT_SLOTS.length + contentIndex;
 
-        if (cosmeticIndex >= cosmetics.size()) return;
+        if (cosmeticIndex >= cosmetics.size())
+            return;
 
         Cosmetic selected = cosmetics.get(cosmeticIndex);
         CosmeticsPlayer cp = plugin.getPlayerManager().getPlayer(player.getUniqueId());
-        if (cp == null) return;
+
+        if (cp == null)
+            return;
 
         switch (category) {
             case PARTICLE_TRAIL -> {
@@ -148,7 +160,11 @@ public class GUIListener implements Listener {
 
     @EventHandler
     public void onClose(InventoryCloseEvent event) {
-        if (event.getPlayer() instanceof Player player)
-            plugin.getGuiManager().removeFromGui(player.getUniqueId());
+        plugin.getGuiManager().removeFromGui(event.getPlayer().getUniqueId());
+    }
+
+
+    public void register() {
+        Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 }

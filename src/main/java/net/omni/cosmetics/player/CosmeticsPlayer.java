@@ -13,9 +13,11 @@ public class CosmeticsPlayer {
 
     private final UUID uuid;
     private final Player player;
+
     private CosmeticsTag activeTag;
     private CosmeticsPin activePin;
     private CosmeticsChatColor activeChatColor;
+
     private BlockTrail activeBlockTrail;
     private ParticleTrail activeParticleTrail;
 
